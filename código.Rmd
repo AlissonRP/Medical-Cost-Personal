@@ -1,0 +1,202 @@
+---
+title: "Titulo pdf"
+author: "Alisson Rosa"
+header-includes:
+   - \usepackage[brazil]{babel}
+geometry: margin=2cm
+output:
+  bookdown::pdf_document2:
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+```{r setup,,include=F,}
+library(hnp) # pacote para envelope simulado
+library(lmtest) # teste reset
+library(car) # para teste de multicolinearidade (fatores de inflacao de variancia)
+library(tseries)
+library('tidyverse')
+library("tidymodels")
+library('kableExtra')
+ # teste de Jarque-Bera
+options(digits=3)
+theme_set(theme_minimal())
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=4.85)
+doParallel::registerDoParallel(cores=2)
+scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
+df=read_csv("https://raw.githubusercontent.com/AlissonRP/DATA_SETS/master/insurance.csv")
+##https://www.kaggle.com/mirichoi0218/insurance# link do df
+
+```
+
+##Limpeza dos dados
+```{r dc}
+df=df %>% 
+   mutate(smoker=ifelse(smoker=="yes",1,0),sex=ifelse(sex=='female',1,0))
+
+```
+
+
+
+
+##Análise Exploratória
+
+```{r ead}
+disp=function(df,v1,v2){
+  df %>% 
+    ggplot(aes({{v1}},{{v2}}))+
+    geom_point()
+  
+}
+df %>% 
+  disp(age,charges)
+df$bmi %>% 
+sqrt() %>% 
+  hist()
+
+```
+
+
+##Modelagem
+
+```{r mod}
+df_split=initial_split(df,prop=0.8)
+df_train=training(df_split)
+df_test=testing(df_split)
+df_boot=bootstraps(df_train,15)
+
+df_rec1=df_train %>% 
+  recipe(charges~.) %>% 
+  step_dummy(all_nominal())
+
+
+df_rec2=df_train %>% 
+  select(-region,-bmi) %>% 
+  recipe(charges~.)
+
+df_rec3=df_train %>% 
+  select(-region,-bmi,-sex) %>% 
+  recipe(charges~.)
+```
+
+
+```{r mod}
+df_reg=
+  linear_reg() %>% 
+  set_engine("lm")
+```
+```{r}
+df_work=
+   workflow_set(list(all=df_rec1,ok=df_rec2,t=df_rec3),list(reg=df_reg),cross = T)
+```
+
+```{r}
+df_tuner=df_work %>% 
+  workflow_map("tune_grid",
+               resamples=df_boot,
+               grid=30,
+               metrics=metric_set(rmse,rsq),verbose = T)
+
+fit1=df_tuner %>% 
+  pull_workflow(id="ok_reg") %>%  #Em um primeiro momento, o modelo com todas as variáveis foi descartado,
+  fit(df_train)                   # e como a variável sexo foi significativa usaremos o modelo "t"
+                                  
+fit2=df_tuner %>% 
+  pull_workflow(id="t_reg") %>%
+  fit(df_train)
+
+ft2=fit2$fit$fit$fit
+```
+
+##Avaliação da modelagem
+
+```{r reset}
+## Testa [S0]
+## Teste RESET de especificacao
+## H0: O modelo estacorretamente especificado
+resettest(ft2)  # sem problemas até aqui
+```
+
+```{r média zero}
+## Testa [S1]
+## Teste t para a média dos errros
+## H0: média dos erros eh igual a zero
+t.test(resid(ft2),mu=0,alternative="two.sided") #sem problemas
+```
+
+```{r var const}
+## Testa [s2]
+## Teste de Bressch-Pagan (Koenker) de Heteroscedasticidade
+## H0: erros sao homoscedasticos
+bptest(ft2, studentize = TRUE)
+```
+
+
+
+```{r autocor}
+## Testa [S3]
+## Teste de Durbin-Watson de autocorrelacao
+## H0: : Nao hah autocorrelacao 
+dwtest(ft2)  #ok
+```
+
+```{r multi}
+## Testa [S4]
+## Usa Fatores de Inflacao de Variancia para detectar multicolinearidade
+## Regra de bolso: vif > 10 indica multicolinearidade. vif=1 seria o ideal.
+vif(ft2)  #ok
+```
+
+```{r normalidade}
+## Testa [S5]
+## Teste Jarque-Bera de Normalidade
+## H0: Os erros possuem distribuicao normal
+jarque.bera.test(resid(ft2))
+shapiro.test(ft2$residuals)
+```
+```{r}
+##### Analise de influencia
+n<-dim(df)[1] # tamanho da amostra
+
+# com a seguinte funcao se obtem varias medidas de influencia
+t=influence.measures(ft2)
+```
+```{r alavancagem}
+hatvalues(ft2)
+h_bar<-ft2$rank/ n
+limite<-3*h_bar
+abline(plot(hatvalues(ft2),ylab="Alavancagem"), 
+       col="red", h=limite,lty=2)
+
+```
+```{r dffits}
+dffits(ft2)
+limite<-3*sqrt(ft2$rank / n)
+abline(plot(dffits(ft2),ylab="DFFITS"), 
+       col="red", h=limite,lty=2)
+identify(dffits(fit),n=2) # para identificar os pontos
+```
+```{r cook}
+limite<-4/(n-ft2$rank )
+abline(plot(cooks.distance(ft2),ylab="Distancia de Cook"), 
+       col="red", h=limite,lty=2)
+```
+```{r residuos}
+# residuo
+residuo <- rstudent(ft2) # residuo studentizado
+
+plot(residuo,type='p',pch="+",main="Residuos",xlab="indices") # plota os residuos do modelo
+abline(h=c(-2,0,2),lty=3) # inclui linhas horizontais no grafico
+
+hist(residuo) # histograma dos residuos
+
+# envelope simulado baseado nos residuos studentizados
+hnp(ft2,resid.type="student",halfnormal = F) # envelope simulado 
+
+```
+
+
+```
+
