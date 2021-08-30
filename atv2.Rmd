@@ -1,6 +1,6 @@
 ---
 title: "Trabalho 2 Análise de Regressão"
-author: "Alisson Rosa"
+author: "Alisson Rosa e Vítor Perira"
 header-includes:
    - \usepackage[brazil]{babel}
 geometry: margin=2cm

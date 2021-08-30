@@ -1,6 +1,6 @@
 ---
 title: "Titulo pdf"
-author: "Alisson Rosa"
+author: "Alisson Rosa e Vítor Pereira"
 header-includes:
    - \usepackage[brazil]{babel}
 geometry: margin=2cm
