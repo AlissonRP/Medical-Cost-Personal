@@ -56,6 +56,7 @@ df$bmi %>%
 sqrt() %>% 
   hist()
 
+
 ```
 
 
@@ -101,7 +102,7 @@ df_tuner=df_work %>%
 
 fit1=df_tuner %>% 
   pull_workflow(id="ok_reg") %>%  #Em um primeiro momento, o modelo com todas as variáveis foi descartado,
-  fit(df_train)                   # e como a variável sexo foi significativa usaremos o modelo "t"
+  fit(df_train)                   # e como a variável sexo  não foi significativa usaremos o modelo "t"
                                   
 fit2=df_tuner %>% 
   pull_workflow(id="t_reg") %>%
@@ -115,7 +116,7 @@ ft2=fit2$fit$fit$fit
 ```{r reset}
 ## Testa [S0]
 ## Teste RESET de especificacao
-## H0: O modelo estacorretamente especificado
+## H0: O modelo esta corretamente especificado
 resettest(ft2)  # sem problemas até aqui
 ```
 
@@ -176,7 +177,7 @@ dffits(ft2)
 limite<-3*sqrt(ft2$rank / n)
 abline(plot(dffits(ft2),ylab="DFFITS"), 
        col="red", h=limite,lty=2)
-identify(dffits(fit),n=2) # para identificar os pontos
+identify(dffits(ft2),n=5) # para identificar os pontos
 ```
 ```{r cook}
 limite<-4/(n-ft2$rank )

@@ -3,8 +3,7 @@ library(lmtest) # teste reset
 library(car) # para teste de multicolinearidade (fatores de inflacao de variancia)
 library(tseries)
 library('tidyverse')
-library("tidymodels")
-library('kableExtra')
+
 # teste de Jarque-Bera
 options(digits=3)
 theme_set(theme_minimal())
@@ -18,15 +17,22 @@ df=read_csv("https://raw.githubusercontent.com/AlissonRP/DATA_SETS/master/insura
 
 
 df=df %>% 
-  mutate(smoker=ifelse(smoker=="yes",1,0),sex=ifelse(sex=='female',1,0),charges=scale(log(charges)))
+  mutate(smoker=ifelse(smoker=="yes",1,0),sex=ifelse(sex=='female',1,0)) %>% 
+  select(-region,-bmi) 
+  
+attach(df)
 
-df=df %>% 
-  select(bmi,charges) 
+fit=bind_cols(y=y2,df) %>%
+  select(-charges) %>% 
+  lm(y~.,.)
   
 
 
-fit=df %>% 
-  lm(charges~.,.)
+result=boxcox(lm(charges~age+children+smoker),lambda=seq(0,1,by=.1))
+mylambda = result$x[which.max(result$y)]
+mylambda
+y2 = (charges^mylambda-1)/mylambda
+hist(y2)
 
 df %>% 
   ggplot(aes(charges)) + 
@@ -73,7 +79,8 @@ vif(ft2)
 ## Teste Jarque-Bera de Normalidade
 ## H0: Os erros possuem distribuicao normal
 jarque.bera.test(resid(fit))
-
+jarque.bera.test(residuo)
+shapiro.test(y2)
 
 
 ##### Analise de influencia
@@ -88,7 +95,7 @@ h_bar<-fit$rank/ n
 limite<-3*h_bar
 abline(plot(hatvalues(fit),ylab="Alavancagem"), 
        col="red", h=limite,lty=2)
-
+identify(hatvalues(fit),n=1)
 
 dffits(fit)
 limite<-3*sqrt(fit$rank / n)
@@ -99,7 +106,7 @@ identify(dffits(fit),n=3)
 
 limite<-4/(n-fit$rank )
 abline(plot(cooks.distance(fit,ylab="Distancia de Cook"), 
-       col="red", h=limite,lty=2)
+       col="red", h=limite,lty=2))
 
 # residuo
 residuo <- rstudent(fit) # residuo studentizado
@@ -121,4 +128,5 @@ df %>%
   ggplot(aes((log(charges))))+
   geom_density()
 
-  
+
+               
