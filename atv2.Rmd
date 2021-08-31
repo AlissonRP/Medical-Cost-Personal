@@ -1,0 +1,338 @@
+---
+title: "Trabalho 2 Análise de Regressão"
+author: "Alisson Rosa e Vítor Perira"
+header-includes:
+   - \usepackage[brazil]{babel}
+geometry: margin=2cm
+output:
+  bookdown::pdf_document2:
+editor_options:
+  chunk_output_type: console
+---
+
+
+
+```{r setup,include=F}
+ 
+library('tidyverse')
+library("tidymodels")
+library('kableExtra')
+options(digits=3)
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=4)
+scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
+
+df1=read_csv('airports.csv')
+df2=read_csv('hdi.csv')
+df3=read_csv('states.csv')
+df4 = read_csv('icu-beds.csv')
+df1 <- merge(df1, df2)
+df1 <- merge(df1, df3)
+df1 <- merge(df1, df4)
+df1 <- df1[,-c(7:21,29,30,1)]
+```
+
+
+```{r, funções}
+
+
+df=df[-c(29,54,88,24,63,19),]
+df=df[-c(50,37),]
+df=df[-c(56,30),]
+df=df[-c(71),]
+
+#Dispersão/ correlação
+d=function(df,v1,v2,px){
+  df %>% 
+    ggplot(aes({{v1}},{{v2}})) +
+    geom_point()+
+    annotate(x=px, y=5500, 
+         label=paste("Correlação= ", round(cor(df %>% 
+                                         select({{v1}}),df %>% 
+                                         select({{v2}})),2)), 
+         geom="text", size=5)
+}
+
+tbl=function(v,tit){
+  v %>% 
+    kable(caption=tit,align = "c") |> 
+  kable_classic(latex_options = "HOLD_position") 
+}
+
+graph=function(df,l){
+  df %>% 
+    as_tibble() %>% 
+      ggplot(aes(as.numeric(row.names(df  %>% as_tibble())),value))+
+      geom_point(shape=1)+
+      geom_hline(yintercept=l, linetype="dashed", color = "red")+
+      geom_hline(yintercept=-l, linetype="dashed", color = "red")+
+      labs(x="Índice")
+    
+}
+```
+
+\section{Introdução}
+Vejamos um breve resumo das variáveis de estudo :
+```{r}
+df %>% 
+  psych::describe() %>% 
+  .[,-c(1,6,7,10,11,13,12)] %>% 
+  rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max)%>% 
+  tbl("Resumo das variáveis: ")
+  
+
+```
+Perceba a relação entre a variável $x_1$ e y pelo seguinte gráfico de dispersão:
+```{r}
+df %>% 
+  d(x1,y,-4.3)+
+  labs(title="Gráfico de dispersão entre x1 e y")
+
+```
+Ora, podemos ver que se assemelha  a uma parabóla, então vejamos a relação com a variável x1 ao quadrado:
+
+```{r}
+df %>% 
+  ggplot(aes((x1)^2,y))+
+  geom_point()+
+  annotate(x=11.8 ,y=5500, 
+         label=paste("Correlação= ", round(cor(df$y,(df$x1)^2),2)), 
+         geom="text", size=5)+
+  labs(x="x1 ao quadrado",title="Gráfico de dispersão entre x1 ao quadrado e y")
+  
+```
+Agora a relação torna-se linear, e com correlação igual a `r round(cor(df$y,(df$x1)^2),3)`
+A correlação das outras variáveis é dada por : 
+```{r}
+cor(df) %>% 
+ tbl("Correlação entre as variáveis")
+```
+
+Podemos ver que nos valores observados, existe um pouco de correlação nas covariáveis, testaremos mais a frente a existência de multicolineriadade. 
+
+Ajustaremos a regressão com o $x_1$ ($modelo_1$) na sua forma padrão e ao quadrado ($modelo_2$)
+
+
+
+\section{Primeiro ajuste do Modelo}
+
+
+```{r mod1}
+
+df_boot=bootstraps(df,15)
+
+df_rec1=df %>% 
+  recipe(y~.)
+
+df_rec2=
+  df %>% 
+  mutate(x1=x1^2) %>% 
+  recipe(y~.) 
+  
+
+
+```
+
+
+```{r mod2}
+df_reg=
+  linear_reg() %>% 
+  set_engine("lm")
+
+```
+```{r}
+df_work=
+   workflow_set(list(df_rec1,df_rec2),list(reg=df_reg),cross = T)
+```
+
+```{r}
+df_tuner=df_work %>% 
+  workflow_map("tune_grid",
+               resamples=df_boot,         #pretendia ajustar outros modelos mas o tempo não permitiu
+               grid=30,
+               metrics=metric_set(rmse,rsq),verbose = T) 
+
+fit1=df_tuner %>% 
+  extract_workflow(id="recipe_1_reg") %>% 
+  fit(df)                 
+                                  
+fit2=df_tuner %>% 
+  extract_workflow(id="recipe_2_reg") %>%
+  fit(df %>% 
+        mutate(x1=x1^2))
+ft1=fit1$fit$fit$fit
+ft2=fit2$fit$fit$fit
+residuo = rstudent(ft2)
+
+```
+
+Primeiramente a regressão com o $x_1$ tem-se um $R^2 \; ajustado=$ `r round(glance(fit1)[1,2],3)` e no modelo ajustado com $x_1^2$ tem-se `r round(glance(fit2)[1,2],3)`
+
+\section{Verificação dos pressupostos}
+
+Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo o teste para o $modelo_1$ obtém-se um p-valor < 0.001 o que indica evidências de que nosso modelo não está  bem ajustado, o teste para o $modelo_2$ possui p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem evidências contra a hipótese suposta, portanto, a partir de agora o $modelo_1$ será abandonado e toda análise seguinte será sobre o $modelo_2$, portanto a partir de agora modelo refere-se ao com $x_1$ ao quadrado.
+
+É necessário ver se existem observações atípicas no conjunto dados, que podem estar influenciando a análise:
+
+```{r}
+n=length(df$y)
+```
+\subsection{Análise de Influência}
+No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos
+```{r alavancagem}
+
+h_bar=ft2$rank / n
+
+hatvalues(ft2) %>% 
+  graph(3*h_bar)+
+  labs(title="Alavancagem",y="Medida de Alavancagem")
+  
+
+```
+Temos  dffits, que informam o grau de influência que a observação $i$ tem sobre o valor seu próprio valor ajustado $\hat{y_i}$, percebe-se somente uma observação levemente fora dos limites
+```{r dffits}
+
+dffits(ft2) %>% 
+ graph(2*sqrt(ft2$rank / n))+
+  labs(title="dffit")+
+  labs(title="dffit vs índice",y="dffit")
+
+  # plotly::ggplotly()
+  
+  
+
+
+```
+Tem-se também a distância de cook, que fornece a influência da observação $i$ sobre todos os $n$ valores ajustados
+```{r cook}
+
+
+cooks.distance(ft2) %>% 
+  graph(4/(n-ft2$rank ))+
+  labs(title="Distância de cook vs indíces",y="Dis cook")
+#
+
+
+```
+O gráfico de resíduos também é importante para verificarmos visualmente a média dos res´sduos e se existe algum valor fora de 3 desvios padrões, pois esse possui baixíssima probabilidade de serem observados.
+```{r residuos}
+# residuo
+ # residuo studentizado
+residuo %>% 
+  graph(3)+
+  geom_hline(yintercept = 0, linetype="dashed", color = "blue")+
+  labs(title="residuo vs índice",y="Resíduo")
+
+
+
+
+residuo %>% 
+  tibble(res=.) %>% 
+  ggplot(aes(res))+
+ geom_histogram(breaks=seq(-1.993,2.289 +0.01,0.5),
+                 fill="white", colour="black")+
+  labs(x="Resíduo",title="Histograma dos resíduos")
+
+
+```
+E por último tem-se o gráfico de envelope simulado, que informa se a distribuição proposta para os dados está em conforme com os valores observados, percebe-se todos os valores dentros das bandas simuladas
+```{r env,comment=NA}
+residuo %>% 
+  as_tibble() %>% 
+  ggplot(aes(sample = value)) +
+  qqplotr::geom_qq_band(alpha = 0.5, fill="white", col="black",B=150,bandType = "boot") +
+  qqplotr::stat_qq_line(size=0.5, linetype="dashed") + 
+  qqplotr::stat_qq_point(size=1.3) +
+  scale_fill_discrete("Bandtype")+
+  labs(x = "Quantis teóricos", y = "Quantis amostrais",title="Envelope Simulado")
+
+
+```
+
+\subsection{Teste de hipótese dos pressupostos}
+
+Primeiramente vamos testar se os erros ($\epsilon$) possuem média zero, para isso usaremos um teste t que tem  como  hipótese:
+ $$H_0: E(\epsilon_i)= 0$$ 
+Obtem-se um p-valor >> $0.1$, portanto manteremos a hipótese de média nula dos erros.
+
+Segundo precisamos testar  a hipótese de variância constante dos erros, usaremos o Teste de Bressch-Pagan, que tem por hipótese:
+$$H_0: Var(\epsilon_i)= \sigma^2$$
+
+
+
+
+Obtém-se um p-valor de `r lmtest::bptest(ft2, studentize = TRUE)$p.value` que também informa que não possuímos evidências amostrais contra a hipótese proposta.
+
+Agora fazemos o teste de normalidade, utilizando o teste de Jarque-Bera, obtivemos um p-valor de `r tseries::jarque.bera.test(residuo)$p.value` que também informa que não existem evidência contra normalidade dos erros
+
+Como informado no início também é necessário testar se existe multicolinearidade, para tal usa-se fatores de inflação da variância (vif) para detectar, é ideal é que vif=1, obtemos `r car::vif(ft2)` para as variáveis $x_1$,$x_2$,$x_3$ e $x_4$ respectivamente.
+
+E por último é necessário testar a existência de autocorrelação, usaremos o Teste de Durbin-Watson, que tem por hipótese, que existe não existe correlação, após aplicação do teste obtém-se um p-valor de `r lmtest::dwtest(ft2)$p.value` i.e, não existem evidências contra a hipótese de autocorrelação.
+
+Logo, pelo testes anteriores não existem evidências contra os pressupostos teóricos, com isso podemos estabelecer inferência para os parâmetros do modelo
+```{r média zero,include=FALSE}
+
+## Teste t para a média dos errros
+## H0: média dos erros eh igual a zero
+t.test(resid(ft2),mu=0,alternative="two.sided") 
+
+```
+
+```{r var const,include=F}
+
+## Teste de Bressch-Pagan (Koenker) de Heteroscedasticidade
+## H0: erros sao homoscedasticos
+lmtest::bptest(ft2, studentize = TRUE)
+```
+
+
+
+```{r autocor,include=F}
+
+## Teste de Durbin-Watson de autocorrelacao
+## H0: : Nao autocorrelacao 
+lmtest::dwtest(ft2) 
+```
+
+```{r multi,include=F}
+
+
+## Regra de bolso: vif > 10 indica multicolinearidade. vif=1 seria o ideal.
+car::vif(ft2)  
+```
+
+```{r normalidade,include=F}
+
+## Teste Jarque-Bera de Normalidade
+## H0: Os erros possuem distribuicao normal
+tseries::jarque.bera.test(residuo)
+
+```
+\section{Ajuste final}
+
+Tem-se  portanto como resumo do modelo final a seguinte tabela:
+```{r}
+
+   
+tidy(fit2) %>% 
+  select(-statistic) %>% 
+  kable(caption="Resumo do modelo final",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 4) %>% 
+  kable_classic(latex_options = "HOLD_position") 
+```
+Que informa que o intercepto e o coeficiente de $x_2$ não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente $99$% da variação da variável y é explicada pelas covariáveis propostas.
+
+\section{Comentário} 
+O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/RegressaoATV_2).
+
+
+```{r}
+fit <- lm(GDP~.,data=df1) 
+stats::step(fit)
+jarque.bera.test(resid(fit))
+fit2 <- lm(formula = GDP ~ `Passengers rate` + `HDI Education 2017` + 
+    `HDI Wealth 2017` + `HDI Health 2017` + Population + Poverty + `Private beds per citizen`, data = df1)
+jarque.bera.test(resid(fit2))
+resettest(fit2)
+```
+
+
