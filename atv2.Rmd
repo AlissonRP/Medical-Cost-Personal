@@ -21,26 +21,15 @@ options(digits=3)
 theme_set(theme_bw())
 knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=4)
 scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
-df=read_csv('countries.csv')
-#Se quiser achar um jeito pra completa pela média sinta-se a vontade
-df <- df %>%
-  select(-Country, -Region, -Climate) %>%
-  drop_na()
-colnames(df) <- c('Pop', 'Area', 'Densidade', 'Fronteira_Mar', 'Migracao', 'Taxa_Mortalidade_Infantil', 'PIB', 'Alfabetizao', 'Taxa_Telefone', 'Aravel%', 'Cultivo%', 'Outros%', 'Taxa_Natalidade', 'Taxa_Mortalidade', 'Agricultura', 'Industria', 'Servico')
-df <- df %>%
-  mutate(Densidade = as.numeric(Densidade))
 
-convert_number <- function(data,col) {
-  x1 <- gsub(",",".",data[[col]])
-  x2 <- as.numeric(x1)
-  return(x2)
-}
-v <- colnames(df)
-for (i in v){
-  df[i]<- convert_number(df,i)
-}
-
-  
+df1=read_csv('airports.csv')
+df2=read_csv('hdi.csv')
+df3=read_csv('states.csv')
+df4 = read_csv('icu-beds.csv')
+df1 <- merge(df1, df2)
+df1 <- merge(df1, df3)
+df1 <- merge(df1, df4)
+df1 <- df1[,-c(7:21,29,30,1)]
 ```
 
 
@@ -334,19 +323,16 @@ Que informa que o intercepto e o coeficiente de $x_2$ não são significativos a
 
 \section{Comentário} 
 O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/RegressaoATV_2).
-```
 
 
-```
 ```{r}
-fit <- lm(Alfabetizao~.,data=df) 
-summary(fit)
+fit <- lm(GDP~.,data=df1) 
 stats::step(fit)
-fit2 <- lm(formula = Alfabetizao ~ Migracao + Taxa_Mortalidade_Infantil + 
-    Taxa_Telefone + `Aravel%` + `Cultivo%` + Taxa_Natalidade + 
-    Taxa_Mortalidade + Agricultura + Industria + Servico, data = df)
+jarque.bera.test(resid(fit))
+fit2 <- lm(formula = GDP ~ `Passengers rate` + `HDI Education 2017` + 
+    `HDI Wealth 2017` + `HDI Health 2017` + Population + Poverty + `Private beds per citizen`, data = df1)
 jarque.bera.test(resid(fit2))
-#Melhor foi com Alfabetizao como dependente
+resettest(fit2)
 ```
 
 
