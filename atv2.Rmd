@@ -19,21 +19,15 @@ library("tidymodels")
 library('kableExtra')
 options(digits=3)
 theme_set(theme_bw())
-knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=4)
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=3.3)
 scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
+df=read_csv("https://raw.githubusercontent.com/AlissonRP/gdp-statesBR/main/df")
 
-df1=read_csv('https://raw.githubusercontent.com/AlissonRP/Medical-Cost-Personal/main/airports.csv')
-df2=read_csv('https://raw.githubusercontent.com/AlissonRP/Medical-Cost-Personal/main/hdi.csv')
-df3=read_csv('https://raw.githubusercontent.com/AlissonRP/Medical-Cost-Personal/main/states.csv')
-df4 = read_csv('https://raw.githubusercontent.com/AlissonRP/Medical-Cost-Personal/main/icu-beds.csv')
-df1=
-  left_join(df1,df2) %>% 
-   left_join(df3) %>% 
-     left_join(df4)
+df=df %>% 
+  select(UF,PIB=GDP,IDHe=`HDI Education 2017`,Área=Area,`Densidade Demográfica`=`Demographic Density`,Pobreza=Poverty) %>% 
+  .[-7,]
 
 
-
-df1 <- df1[-c(7),-c(7:21,29,30,1,27)]
 ```
 
 
@@ -46,12 +40,13 @@ df1 <- df1[-c(7),-c(7:21,29,30,1,27)]
 d=function(df,v1,v2,px){
   df %>% 
     ggplot(aes({{v1}},{{v2}})) +
-    geom_point()+
-    annotate(x=px, y=79500, 
+    geom_point(size=2.1,color="red")+
+    annotate(x=px, y=55000, 
          label=paste("Correlação= ", round(cor(df %>% 
                                          select({{v1}}),df %>% 
                                          select({{v2}})),2)), 
-         geom="text", size=5)
+         geom="text", size=5)+
+    ggrepel::geom_text_repel(aes(label=UF),size=2.8,point.padding = 0.3)
 }
 
 tbl=function(v,tit){
@@ -73,64 +68,89 @@ graph=function(df,l){
 ```
 
 \section{Introdução}
-A proposta do respectivo trabalho é predizer o produto interno bruto (GDP) de 26 estados do Brasil, para isso utiliza-se de um modelo de regressão linear, random forest e Knn
+A proposta do respectivo trabalho é predizer o produto interno bruto (PIB) de 26 estados do Brasil no ano de 2019, os dados foram extraidos de planinhas disponíveis no site do Instituto Brasileiro de Geografia e Estatística (IBGE) para isso utiliza-se  como variáveis explicativas (covariáveis):
+**Pobreza**: Que fornece a taxa de extrema pobreza no ano 2010;  
+**Densidade Demográfica**: Informa a densidade demográfica de cada estado no ano de 2019;  
+**Área** : Refere-se a área em km de cada estado no ano de 2019; 
+**índice de Desenvolvimento Humano (IDHe) Educacional**: Refere-se ao IDH educacional no de ano de 2017, a escolha das covariáveis foram para conter três eixos:
+
+**População e Geográfia do Estado**: Área e Densidade Demográfica
+**Condição de Vida**: Pobreza
+e **Educação** : IDHe
+Como modelos de preditivos foi utilizado  uma regressão linear, florestas aleatórias (rf)  e os k-vizinhos mais próximos (knn)
+
+\section{Análise Descritiva}
 Vejamos um breve resumo das variáveis de estudo :
 ```{r}
-df1 %>% 
+df %>% 
+  select(-UF) %>% 
   psych::describe() %>% 
   .[,-c(1,6,7,10,11,13,12)] %>% 
-  rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max)%>% 
+  rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max) %>% 
   tbl("Resumo das variáveis: ")
   
 
 ```
-Perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
+Para o eixo condição de vida, perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
 ```{r}
-df1 %>% 
-  d(Poverty,GDP,0.07)+
-  labs(title="Gráfico de dispersão entre x1 e y")
+df %>% 
+  d(Pobreza,PIB,0.20)+
+  labs(title="Gráfico de dispersão entre Pobreza e PIB")
+
 
 ```
-Ora, podemos ver que se assemelha  a uma parabóla, então vejamos a relação com a variável x1 ao quadrado:
+Pode-se ver pelo gráfico e pela correlação de `r round(cor(df$PIB,df$Pobreza),3)` que quanto maior for a taxa de pobreza do estado, menor será seu PIB.
+
+
+Para o eixo Educação, perceba a relação entre **IDHe** e  o **PIB** pelo seguinte gráfico de dispersão:
 
 ```{r}
 df %>% 
-  ggplot(aes((x1)^2,y))+
-  geom_point()+
-  annotate(x=11.8 ,y=5500, 
-         label=paste("Correlação= ", round(cor(df$y,(df$x1)^2),2)), 
-         geom="text", size=5)+
-  labs(x="x1 ao quadrado",title="Gráfico de dispersão entre x1 ao quadrado e y")
+  d(IDHe,PIB,0.67)+
+  labs(title="Gráfico de dispersão entre IDHe e PIB")
   
 ```
-Agora a relação torna-se linear, e com correlação igual a `r round(cor(df$y,(df$x1)^2),3)`
-A correlação das outras variáveis é dada por : 
+Pode-se ver pelo gráfico e pela correlação de `r round(cor(df$PIB,df$IDHe),3)` que quanto maior for a IDHe, maior será seu PIB.
+
+E para o eixo População e Geográfia do Estado tem-se o gráfico de dispersão:
+
 ```{r}
-cor(df) %>% 
+df %>% 
+  d(`Densidade Demográfica`,PIB,200)+
+  labs(title="Gráfico de dispersão entre IDHe e PIB")
+```
+Duas observações se destacam das outras, pois possuem uma densidade demográfica bastante superior a média, sendo elas São Paulo e Rio de Janeiro, pelo gráfico de dispersão não fica muito claro o comportamento da relação entre PIB e Densidade Demográfica, a correlação de `r `round(cor(df$PIB,df$`Densidade Demográfica`),3)` indica que é uma correlação positiva entretanto fraca.
+```{r}
+df %>% 
+  select(-UF) %>% 
+   cor() %>% 
  tbl("Correlação entre as variáveis")
 ```
 
-Podemos ver que nos valores observados, existe um pouco de correlação nas covariáveis, testaremos mais a frente a existência de multicolineriadade. 
-
-Ajustaremos a regressão com o $x_1$ ($modelo_1$) na sua forma padrão e ao quadrado ($modelo_2$)
+Podemos notar nos valores observados das variáveis que existe um pouco de correlação nas covariáveis, testaremos mais a frente a existência de multicolineriadade. 
 
 
 
-\section{Primeiro ajuste do Modelo}
+
+\section{Ajuste dos Modelos}
+Nessa seção serão ajustados os modelos de regressão linear, rf e knn [^1], usando as covariáveis já citadas.  
+Os hiperparâmetros dos modelos que possuem, foram encontrados por otimização, tentando minimizar a raiz do erro quadrático médio (rmse). O seguinte gráfico ilustra o rmse para cada modelo 
+
+
 
 
 ```{r mod1}
-
-df_boot=bootstraps(df,15)
-
-df_rec1=df %>% 
-  recipe(y~.)
-
-df_rec2=
+set.seed(4)
+df_boot=
   df %>% 
-  mutate(x1=x1^2) %>% 
-  recipe(y~.) 
-  
+  select(-UF) %>% 
+  bootstraps(15)
+
+df_rec1=df %>%
+  select(-UF) %>% 
+  recipe(PIB~.)
+
+
 
 
 ```
@@ -141,34 +161,49 @@ df_reg=
   linear_reg() %>% 
   set_engine("lm")
 
+df_rf=
+  rand_forest(trees=500,mtry=3,min_n =7) %>% 
+  set_mode("regression") %>% 
+  set_engine("ranger",importance = "impurity")
+
+df_knn= nearest_neighbor(mode="regression",neighbors =8) %>% 
+  set_engine("kknn")
+
 ```
 ```{r}
 df_work=
-   workflow_set(list(df_rec1,df_rec2),list(reg=df_reg),cross = T)
+   workflow_set(list(df_rec1),list(reg=df_reg,rf=df_rf,knn=df_knn),cross = T)
 ```
 
 ```{r}
+set.seed(4)
+doParallel::registerDoParallel(cores=2)
 df_tuner=df_work %>% 
   workflow_map("tune_grid",
-               resamples=df_boot,         #pretendia ajustar outros modelos mas o tempo não permitiu
-               grid=30,
-               metrics=metric_set(rmse,rsq),verbose = T) 
+               resamples=df_boot,         
+               grid=15,
+               metrics=metric_set(rmse),verbose = T) 
+autoplot(df_tuner)+
+  labs(title="Comparação dos modelos ajustados",x="Rank do modelo",y="Métrica")
+rank_results(df_tuner,rank_metric = "rmse") %>% view()
 
 fit1=df_tuner %>% 
-  extract_workflow(id="recipe_1_reg") %>% 
+  extract_workflow(id="recipe_rf") %>% 
   fit(df)                 
                                   
 fit2=df_tuner %>% 
-  extract_workflow(id="recipe_2_reg") %>%
-  fit(df %>% 
-        mutate(x1=x1^2))
+  extract_workflow(id="recipe_reg") %>%
+  fit(df)
+
+
+
 ft1=fit1$fit$fit$fit
 ft2=fit2$fit$fit$fit
 residuo = rstudent(ft2)
 
 ```
 
-Primeiramente a regressão com o $x_1$ tem-se um $R^2 \; ajustado=$ `r round(glance(fit1)[1,2],3)` e no modelo ajustado com $x_1^2$ tem-se `r round(glance(fit2)[1,2],3)`
+
 
 \section{Verificação dos pressupostos}
 
@@ -177,7 +212,7 @@ Precisamos primeiramente testar se os modelos estão corretamente especificados,
 É necessário ver se existem observações atípicas no conjunto dados, que podem estar influenciando a análise:
 
 ```{r}
-n=length(df1$`HDI Wealth 2017`)
+n=length(df$Área)
 ```
 \subsection{Análise de Influência}
 No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos
@@ -198,8 +233,7 @@ dffits(ft2) %>%
   labs(title="dffit")+
   labs(title="dffit vs índice",y="dffit")
 
-   plotly::ggplotly()
-  
+
   
 
 
@@ -253,7 +287,7 @@ residuo %>%
 ```{r}
 #Ajustado vs observadp
 ft2$fitted.values %>% 
-  bind_cols(fit=.,y=df1$GDP) %>% 
+  bind_cols(fit=.,y=df$PIB) %>% 
   ggplot(aes(fit,y)) + 
   geom_point()+
   geom_abline(intercept = 0,slope=1)
@@ -330,27 +364,12 @@ tidy(fit2) %>%
   kable(caption="Resumo do modelo final",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 4) %>% 
   kable_classic(latex_options = "HOLD_position") 
 ```
-Que informa que o intercepto e o coeficiente de $x_2$ não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente $99$% da variação da variável y é explicada pelas covariáveis propostas.
+Que informa que o intercepto e o coeficiente de $x_2$ não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente `r round(glance(ft2)[1],3)*100`% da variação do PIB dos estados é explicada pelas covariáveis propostas.
 
 \section{Comentário} 
 O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/RegressaoATV_2).
 
+[^1]: Evidentemente, a escolha de colocar mais modelos foi só por motivos de comparação de desempenho, não foi aprofundado i.e, realizado seperação entre treino e  teste etc
 
-```{r}
-fit <- lm(GDP~.,data=df1) 
-stats::step(fit)
-jarque.bera.test(resid(fit))
-
-ft2 <- lm(formula =GDP ~  + `HDI Education 2017` + 
-      + Area + `Demographic Density` + 
-     +Poverty, data = df1)
-residuo = rstudent(ft2)
-lmtest::resettest(ft2)$p.value
-lmtest::bptest(ft2, studentize = TRUE)$p.value
-tseries::jarque.bera.test(residuo)$p.value
-lmtest::bptest(ft2, studentize = TRUE)
-car::vif(ft2)
-summary(ft2)
-```
 
 
