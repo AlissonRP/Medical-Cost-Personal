@@ -33,7 +33,7 @@ df1=
 
 
 
-df1 <- df1[-7,-c(7:21,29,30,1)]
+df1 <- df1[-c(7),-c(7:21,29,30,1,27)]
 ```
 
 
@@ -47,7 +47,7 @@ d=function(df,v1,v2,px){
   df %>% 
     ggplot(aes({{v1}},{{v2}})) +
     geom_point()+
-    annotate(x=px, y=5500, 
+    annotate(x=px, y=79500, 
          label=paste("Correlação= ", round(cor(df %>% 
                                          select({{v1}}),df %>% 
                                          select({{v2}})),2)), 
@@ -73,9 +73,10 @@ graph=function(df,l){
 ```
 
 \section{Introdução}
+A proposta do respectivo trabalho é predizer o produto interno bruto (GDP) de 26 estados do Brasil, para isso utiliza-se de um modelo de regressão linear, random forest e Knn
 Vejamos um breve resumo das variáveis de estudo :
 ```{r}
-df %>% 
+df1 %>% 
   psych::describe() %>% 
   .[,-c(1,6,7,10,11,13,12)] %>% 
   rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max)%>% 
@@ -83,10 +84,10 @@ df %>%
   
 
 ```
-Perceba a relação entre a variável $x_1$ e y pelo seguinte gráfico de dispersão:
+Perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
 ```{r}
-df %>% 
-  d(x1,y,-4.3)+
+df1 %>% 
+  d(Poverty,GDP,0.07)+
   labs(title="Gráfico de dispersão entre x1 e y")
 
 ```
@@ -249,6 +250,16 @@ residuo %>%
 
 ```
 
+```{r}
+#Ajustado vs observadp
+ft2$fitted.values %>% 
+  bind_cols(fit=.,y=df1$GDP) %>% 
+  ggplot(aes(fit,y)) + 
+  geom_point()+
+  geom_abline(intercept = 0,slope=1)
+```
+
+
 \subsection{Teste de hipótese dos pressupostos}
 
 Primeiramente vamos testar se os erros ($\epsilon$) possuem média zero, para isso usaremos um teste t que tem  como  hipótese:
@@ -329,10 +340,17 @@ O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/Regres
 fit <- lm(GDP~.,data=df1) 
 stats::step(fit)
 jarque.bera.test(resid(fit))
-ft2 <- lm(formula = GDP ~ `Passengers rate` + `HDI Education 2017` + 
-    `HDI Wealth 2017` + `HDI Health 2017` + Population + Poverty + `Private beds per citizen`, data = df1)
-jarque.bera.test(resid(ft2))
-resettest(fit2)
+
+ft2 <- lm(formula =GDP ~  + `HDI Education 2017` + 
+      + Area + `Demographic Density` + 
+     +Poverty, data = df1)
+residuo = rstudent(ft2)
+lmtest::resettest(ft2)$p.value
+lmtest::bptest(ft2, studentize = TRUE)$p.value
+tseries::jarque.bera.test(residuo)$p.value
+lmtest::bptest(ft2, studentize = TRUE)
+car::vif(ft2)
+summary(ft2)
 ```
 
 
