@@ -19,13 +19,19 @@ library("tidymodels")
 library('kableExtra')
 options(digits=3)
 theme_set(theme_bw())
-knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=3.3)
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.9, fig.height=3.7)
 scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
 df=read_csv("https://raw.githubusercontent.com/AlissonRP/gdp-statesBR/main/df")
 
 df=df %>% 
-  select(UF,PIB=GDP,IDHe=`HDI Education 2017`,Área=Area,`Densidade Demográfica`=`Demographic Density`,Pobreza=Poverty) %>% 
-  .[-7,]
+  select(UF,PIB=GDP,IDHe=`HDI Education 2017`,Área=Area,`Densidade Demográfica`=`Demographic Density`,Pobreza=Poverty,Região=Region) %>% 
+    mutate(Região=fct_recode(Região,"Norte"="North",
+                             "Nordeste"="Northeast",
+                             "Centro-oeste"="Center-west",
+                              "Sudeste"="Southeast",
+                              "Sul"="South")) %>% 
+                              .[-7,]  
+  
 
 
 ```
@@ -74,16 +80,16 @@ A proposta do respectivo trabalho é predizer o produto interno bruto (PIB) de 2
 **Área** : Refere-se a área em km de cada estado no ano de 2019; 
 **índice de Desenvolvimento Humano (IDHe) Educacional**: Refere-se ao IDH educacional no de ano de 2017, a escolha das covariáveis foram para conter três eixos:
 
-**População e Geográfia do Estado**: Área e Densidade Demográfica
-**Condição de Vida**: Pobreza
-e **Educação** : IDHe
+**População e Geográfia do Estado**: Área e Densidade Demográfica;   
+**Condição de Vida**: Pobreza;  
+e **Educação** : IDHe;  
 Como modelos de preditivos foi utilizado  uma regressão linear, florestas aleatórias (rf)  e os k-vizinhos mais próximos (knn)
 
 \section{Análise Descritiva}
 Vejamos um breve resumo das variáveis de estudo :
 ```{r}
 df %>% 
-  select(-UF) %>% 
+  select(-UF,-Região) %>% 
   psych::describe() %>% 
   .[,-c(1,6,7,10,11,13,12)] %>% 
   rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max) %>% 
@@ -91,6 +97,35 @@ df %>%
   
 
 ```
+Note pelo seguinte gráfico que os estados da região Norte estão bem próximos da média do PIB por estado (`r mean(df$PIB)`), SP  e RJ estão bem acima e os estados da região nordeste estão bem abaixo.
+```{r}
+df %>% 
+  ggplot(aes(PIB,fct_reorder(UF,PIB),fill=Região)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=PIB), hjust=-0.002)+
+  labs(title="PIB por estado",y="Estado")
+```
+A titulo de curiosidade vejamos o PIB por região
+
+```{r}
+df %>% 
+  group_by(Região) %>% 
+  summarise(`Média PIB`=mean(PIB),`Desvio padrão`=sqrt(var(PIB)),Quantidade=n()) %>% 
+  tbl("PIB por Região")
+```
+
+
+```{r}
+df %>% 
+  group_by(Região) %>% 
+  summarise(mean=mean(PIB),std=sqrt(var(PIB)),count=n()) %>% 
+  ggplot(aes(mean,fct_reorder(Região,mean),fill=Região)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=mean), hjust=-0.002)+
+  labs(title="PIB por Região",y="Estado")
+```
+
+
 Para o eixo condição de vida, perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
 ```{r}
 df %>% 
@@ -119,10 +154,10 @@ df %>%
   d(`Densidade Demográfica`,PIB,200)+
   labs(title="Gráfico de dispersão entre IDHe e PIB")
 ```
-Duas observações se destacam das outras, pois possuem uma densidade demográfica bastante superior a média, sendo elas São Paulo e Rio de Janeiro, pelo gráfico de dispersão não fica muito claro o comportamento da relação entre PIB e Densidade Demográfica, a correlação de `r `round(cor(df$PIB,df$`Densidade Demográfica`),3)` indica que é uma correlação positiva entretanto fraca.
+Duas observações se destacam das outras, pois possuem uma densidade demográfica bastante superior a média, sendo elas São Paulo e Rio de Janeiro, pelo gráfico de dispersão não fica muito claro o comportamento da relação entre PIB e Densidade Demográfica, a correlação de `r round(cor(df$PIB,df$"Densidade Demográfica"),3)` indica que é uma correlação positiva entretanto fraca.
 ```{r}
 df %>% 
-  select(-UF) %>% 
+  select(-UF,-Região) %>% 
    cor() %>% 
  tbl("Correlação entre as variáveis")
 ```
@@ -143,11 +178,11 @@ Os hiperparâmetros dos modelos que possuem, foram encontrados por otimização,
 set.seed(4)
 df_boot=
   df %>% 
-  select(-UF) %>% 
+  select(-UF,-Região) %>% 
   bootstraps(15)
 
 df_rec1=df %>%
-  select(-UF) %>% 
+  select(-UF,-Região) %>% 
   recipe(PIB~.)
 
 
@@ -184,7 +219,8 @@ df_tuner=df_work %>%
                grid=15,
                metrics=metric_set(rmse),verbose = T) 
 autoplot(df_tuner)+
-  labs(title="Comparação dos modelos ajustados",x="Rank do modelo",y="Métrica")
+  labs(title="Comparação dos modelos ajustados",x="Rank do modelo",y="rmse")+
+  theme(legend.title = element_blank())
 rank_results(df_tuner,rank_metric = "rmse") %>% view()
 
 fit1=df_tuner %>% 
@@ -202,12 +238,23 @@ ft2=fit2$fit$fit$fit
 residuo = rstudent(ft2)
 
 ```
+Perceba que a rf possui um rmse menor (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[1,4]`) e a regressão linear possui o maior erro padrão (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[2,5]`)
+
+Em termos da rf as variáveis que possuem a maior importância são dadas pelo seguinte gráfico 
+
+```{r}
+fit1 %>% 
+extract_fit_parsnip() %>% 
+  vip::vip(num_features = 4)+
+  labs(y="Importância",title="Importância das Variáveis na rf")
+```
+Note que a variável Área é que a possui menor importância e Pobreza que a tem mais importância
 
 
 
 \section{Verificação dos pressupostos}
 
-Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo o teste para o $modelo_1$ obtém-se um p-valor < 0.001 o que indica evidências de que nosso modelo não está  bem ajustado, o teste para o $modelo_2$ possui p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem evidências contra a hipótese suposta, portanto, a partir de agora o $modelo_1$ será abandonado e toda análise seguinte será sobre o $modelo_2$, portanto a partir de agora modelo refere-se ao com $x_1$ ao quadrado.
+Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo  o teste para o modelo de regressão obtem-se um  p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem evidências contra a hipótese suposta, portanto,
 
 É necessário ver se existem observações atípicas no conjunto dados, que podem estar influenciando a análise:
 
@@ -215,7 +262,7 @@ Precisamos primeiramente testar se os modelos estão corretamente especificados,
 n=length(df$Área)
 ```
 \subsection{Análise de Influência}
-No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos
+No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos.
 ```{r alavancagem}
 
 h_bar=ft2$rank / n
@@ -249,14 +296,14 @@ cooks.distance(ft2) %>%
 
 
 ```
-O gráfico de resíduos também é importante para verificarmos visualmente a média dos res´sduos e se existe algum valor fora de 3 desvios padrões, pois esse possui baixíssima probabilidade de serem observados.
+O gráfico de resíduos também é importante para verificarmos visualmente a média dos resíduos e se existe algum valor fora de 3 desvios padrões, pois esses possui baixíssima probabilidade de serem observados.
 ```{r residuos}
 # residuo
  # residuo studentizado
 residuo %>% 
   graph(3)+
   geom_hline(yintercept = 0, linetype="dashed", color = "blue")+
-  labs(title="residuo vs índice",y="Resíduo")
+  labs(title="Residuo vs Índice",y="Resíduo")
 
 
 
@@ -284,14 +331,7 @@ residuo %>%
 
 ```
 
-```{r}
-#Ajustado vs observadp
-ft2$fitted.values %>% 
-  bind_cols(fit=.,y=df$PIB) %>% 
-  ggplot(aes(fit,y)) + 
-  geom_point()+
-  geom_abline(intercept = 0,slope=1)
-```
+
 
 
 \subsection{Teste de hipótese dos pressupostos}
@@ -364,10 +404,10 @@ tidy(fit2) %>%
   kable(caption="Resumo do modelo final",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 4) %>% 
   kable_classic(latex_options = "HOLD_position") 
 ```
-Que informa que o intercepto e o coeficiente de $x_2$ não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente `r round(glance(ft2)[1],3)*100`% da variação do PIB dos estados é explicada pelas covariáveis propostas.
+Que informa que o intercepto  não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente `r round(glance(ft2)[1],3)*100`% da variação do PIB dos estados é explicada pelas covariáveis propostas.
 
 \section{Comentário} 
-O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/RegressaoATV_2).
+O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/gdp-statesBR).
 
 [^1]: Evidentemente, a escolha de colocar mais modelos foi só por motivos de comparação de desempenho, não foi aprofundado i.e, realizado seperação entre treino e  teste etc
 
