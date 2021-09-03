@@ -385,7 +385,7 @@ Assim um estado com IDHe máximo (1) adicionaria 70.391,625 reais ao PIB per cap
 Temos conteúdos extras ao trabalho principal que serão linkados nessa seção, que estão relacionados ao objetivo, mas não correspondem ao fundamental do projeto, porém são interessantes para amplificar a análise do PIB per capita.
 
 \subsection{Apêndice A: Modelagem}
-Neste apêndice serão analisados outros modelos preditivos junto com o regressão linear, como os modelos de florestas aleatórias (rf) e os k-vizinhos mais próximos (knn), que pode ser acessado clicando [aqui](https://www.google.com/search?q=modelos+preditivos&rlz=1C1GCEA_pt-BRBR939BR939&oq=modelos+preditivos&aqs=chrome..69i57.2248j0j7&sourceid=chrome&ie=UTF-8).
+Neste apêndice serão analisados outros modelos preditivos junto com o regressão linear, como os modelos de florestas aleatórias (rf) e os k-vizinhos mais próximos (knn), que pode ser acessado clicando [aqui](encurtador.com.br/puPS6).
 
 
 \subsection{Apêndice B: Análise Descritiva, influência e pressupostos Extra}
@@ -393,4 +393,4 @@ Neste apêndice serão analisados outros modelos preditivos junto com o regress�
 Neste apêndice serão feitas análises extras que são interessante para a compreensão da variável desfecho, mas não necessariamente fundamentais, que pode ser acessado clicando [aqui](https://github.com/AlissonRP).
 
 \subsection{Apêndice C: Código Completo}
-O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/gdp-statesBR).
+O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/gdp-statesBR/blob/main/código.Rmd).
