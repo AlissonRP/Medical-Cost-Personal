@@ -59,7 +59,7 @@ graph=function(df,l){
   df %>% 
     as_tibble() %>% 
       ggplot(aes(as.numeric(row.names(df  %>% as_tibble())),value))+
-      geom_point(shape=1)+
+      geom_point()+
       geom_hline(yintercept=l, linetype="dashed", color = "red")+
       geom_hline(yintercept=-l, linetype="dashed", color = "red")+
       labs(x="Índice")
@@ -70,7 +70,7 @@ graph=function(df,l){
 \section{Introdução}
 A proposta do respectivo trabalho é predizer o produto interno bruto per capita (PIB per capita) de 26 estados do Brasil no ano de 2019, os dados foram extraidos de planinhas disponíveis no site do Instituto Brasileiro de Geografia e Estatística (IBGE) para isso utiliza-se  como variáveis explicativas (covariáveis):
 
-**Pobreza**: Que fornece a taxa de extrema pobreza no ano 2010;
+**Pobreza**: Que fornece a taxa de extrema pobreza no ano 2019;
 
 **Densidade Demográfica**: Informa a densidade demográfica de cada estado no ano de 2019;  
 
@@ -98,14 +98,14 @@ df %>%
   round(3) %>%
   tbl("Resumo das variáveis: ")
 ```
-Note pelo seguinte gráfico que os estados da região Norte estão bem próximos da média do PIB por estado (`r mean(df$PIB)`), SP  e RJ estão bem acima e os estados da região nordeste estão bem abaixo.
+Note pelo seguinte gráfico que os estados da região Norte estão bem próximos da média do PIB per capita por estado (`r mean(df$PIB)`), SP  e RJ estão bem acima e os estados da região nordeste estão bem abaixo.
 ```{r}
 df %>% 
   ggplot(aes(PIB,fct_reorder(UF,PIB),fill=Região)) +
   geom_bar(stat="identity")+
   geom_text(aes(label=PIB), hjust=-0.002)+
   labs(title="PIB por estado",y="Estado") + scale_x_continuous(
-    expand = c(0, 0),limits = c(0, 50000))
+    expand = c(0, 0),limits = c(0, 55000))
 ```
 A titulo de curiosidade vejamos o PIB por região
 
@@ -315,15 +315,7 @@ Notamos que por ser uma unidade federativa com a menor área, porém com grande 
 
 Agora iremos verificar os seguintes pressupostos, para utilização correta do modelo de regressão linear: 
 
-[S1] A media dos erros é zero;
-
-[S2] Homoscedasticidade dos erros;
-
-[S3] Não-autocorrelação 
-
-[S4] Ausência de Multicolinearidade;
-
-[S5] Normalidade dos erros;
+Amedia dos erros é zero, Homoscedasticidade dos erros, Não-autocorrelação, Ausência de Multicolinearidade e Normalidade dos erros.
 
 Primeiramente vamos testar se os erros ($\epsilon$) possuem média zero, para isso usaremos um teste t que tem  como  hipótese:
  $$H_0: E(\epsilon_i)= 0$$ 
@@ -333,11 +325,9 @@ Segundo precisamos testar  a hipótese de variância constante dos erros, usarem
 $$H_0: Var(\epsilon_i)= \sigma^2$$
 
 
-
-
 Obtém-se um p-valor de `r lmtest::bptest(ft2, studentize = TRUE)$p.value` que também informa que não possuímos evidências amostrais contra a hipótese proposta.
 
-Agora fazemos o teste de normalidade, utilizando o teste de Jarque-Bera, obtivemos um p-valor de `r tseries::jarque.bera.test(residuo)$p.value` que também informa que não existem evidência contra normalidade dos erros.
+Agora fazemos o teste de normalidade, utilizando o teste de Jarque-Bera, obtivemos um p-valor de `r tseries::jarque.bera.test(residuo)$p.value`, assim não rejeitando a hipótese nula, que é a existência normalidade dos erros.
 
 Como podemos analisar no histograma dos resíduos abaixos, que se assemelha a distribuição normal:
 
@@ -350,9 +340,9 @@ residuo %>%
   labs(x="Resíduo",title="Histograma dos resíduos")
 ```
 
-Como informado no início também é necessário testar se existe multicolinearidade, para tal usa-se fatores de inflação da variância (vif) para detectar, é ideal é que vif=1 e o máximo para não multicolinearidade é 5, obtemos `r car::vif(ft2)` para as variáveis $x_1$,$x_2$,$x_3$ e $x_4$ respectivamente, assim não há evidências para existência de multicolineridade.
+Como informado no início também é necessário testar se existe multicolinearidade, para tal usa-se fatores de inflação da variância (vif) para detectar, é ideal é que vif=1 e o máximo para não multicolinearidade é 5, obtemos `r car::vif(ft2)` para as variáveis $x_1$,$x_2$,$x_3$ e $x_4$ respectivamente.
 
-E por último é necessário testar a existência de autocorrelação, usaremos o Teste de Durbin-Watson, que tem por hipótese, que existe não existe correlação, após aplicação do teste obtém-se um p-valor de `r lmtest::dwtest(ft2)$p.value` i.e, não existem evidências contra a hipótese de autocorrelação.
+E por último é necessário testar a existência de autocorrelação, usaremos o Teste de Durbin-Watson, que tem por hipótese, que existe não existe correlação, após aplicação do teste obtém-se um p-valor de `r lmtest::dwtest(ft2)$p.value` i.e, não existem indicío contra a hipótese de autocorrelação.
 
 Logo, pelo testes anteriores não existem evidências contra os pressupostos teóricos, com isso podemos estabelecer inferência para os parâmetros do modelo.
 ```{r média zero,include=FALSE}
