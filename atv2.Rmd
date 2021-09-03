@@ -1,5 +1,5 @@
 ---
-title: "Trabalho 2 Análise de Regressão"
+title: "Atividade Avaliativa 3 - Análise de Regressão Prática"
 author: "Alisson Rosa e Vítor Perira"
 header-includes:
    - \usepackage[brazil]{babel}
@@ -13,44 +13,40 @@ editor_options:
 
 
 ```{r setup,include=F}
- 
 library('tidyverse')
 library("tidymodels")
 library('kableExtra')
 options(digits=3)
 theme_set(theme_bw())
-knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=4)
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=15, fig.height=3.7)
 scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
+df=read_csv("https://raw.githubusercontent.com/AlissonRP/gdp-statesBR/main/df")
 
-df1=read_csv('airports.csv')
-df2=read_csv('hdi.csv')
-df3=read_csv('states.csv')
-df4 = read_csv('icu-beds.csv')
-df1 <- merge(df1, df2)
-df1 <- merge(df1, df3)
-df1 <- merge(df1, df4)
-df1 <- df1[,-c(7:21,29,30,1)]
+df=df %>% 
+  select(UF,PIB=GDP,IDHe=`HDI Education 2017`,Área=Area,`Densidade Demográfica`=`Demographic Density`,Pobreza=Poverty,Região=Region) %>% 
+    mutate(Região=fct_recode(Região,"Norte"="North",
+                             "Nordeste"="Northeast",
+                             "Centro-oeste"="Center-west",
+                              "Sudeste"="Southeast",
+                              "Sul"="South")) 
+df1 = df  
+df = df[-7,]
+
 ```
 
 
 ```{r, funções}
-
-
-df=df[-c(29,54,88,24,63,19),]
-df=df[-c(50,37),]
-df=df[-c(56,30),]
-df=df[-c(71),]
-
 #Dispersão/ correlação
 d=function(df,v1,v2,px){
   df %>% 
     ggplot(aes({{v1}},{{v2}})) +
-    geom_point()+
-    annotate(x=px, y=5500, 
+    geom_point(size=2.1,color="red")+
+    annotate(x=px, y=55000, 
          label=paste("Correlação= ", round(cor(df %>% 
                                          select({{v1}}),df %>% 
                                          select({{v2}})),2)), 
-         geom="text", size=5)
+         geom="text", size=5)+
+    ggrepel::geom_text_repel(aes(label=UF),size=2.8,point.padding = 0.3)
 }
 
 tbl=function(v,tit){
@@ -72,159 +68,198 @@ graph=function(df,l){
 ```
 
 \section{Introdução}
+A proposta do respectivo trabalho é predizer o produto interno bruto (PIB) de 26 estados do Brasil no ano de 2019, os dados foram extraidos de planinhas disponíveis no site do Instituto Brasileiro de Geografia e Estatística (IBGE) para isso utiliza-se  como variáveis explicativas (covariáveis):
+**Pobreza**: Que fornece a taxa de extrema pobreza no ano 2010;
+
+**Densidade Demográfica**: Informa a densidade demográfica de cada estado no ano de 2019;  
+**Área** : Refere-se a área em km de cada estado no ano de 2019; 
+
+**índice de Desenvolvimento Humano (IDHe) Educacional**: Refere-se ao IDH educacional no de ano de 2017, a escolha das covariáveis foram para conter três eixos:
+
+**População e Geográfia do Estado**: Área e Densidade Demográfica;
+
+**Condição de Vida**: Pobreza;
+
+e **Educação** : IDHe;  
+Como modelos de preditivos foi utilizado  uma regressão linear, florestas aleatórias (rf)  e os k-vizinhos mais próximos (knn)
+
+\section{Análise Descritiva}
 Vejamos um breve resumo das variáveis de estudo :
 ```{r}
 df %>% 
+  select(-UF,-Região) %>% 
   psych::describe() %>% 
   .[,-c(1,6,7,10,11,13,12)] %>% 
-  rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max)%>% 
+  rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max) %>% 
   tbl("Resumo das variáveis: ")
-  
-
 ```
-Perceba a relação entre a variável $x_1$ e y pelo seguinte gráfico de dispersão:
+Note pelo seguinte gráfico que os estados da região Norte estão bem próximos da média do PIB por estado (`r mean(df$PIB)`), SP  e RJ estão bem acima e os estados da região nordeste estão bem abaixo.
 ```{r}
 df %>% 
-  d(x1,y,-4.3)+
-  labs(title="Gráfico de dispersão entre x1 e y")
-
+  ggplot(aes(PIB,fct_reorder(UF,PIB),fill=Região)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=PIB), hjust=-0.002)+
+  labs(title="PIB por estado",y="Estado")
 ```
-Ora, podemos ver que se assemelha  a uma parabóla, então vejamos a relação com a variável x1 ao quadrado:
+A titulo de curiosidade vejamos o PIB por região
 
 ```{r}
 df %>% 
-  ggplot(aes((x1)^2,y))+
-  geom_point()+
-  annotate(x=11.8 ,y=5500, 
-         label=paste("Correlação= ", round(cor(df$y,(df$x1)^2),2)), 
-         geom="text", size=5)+
-  labs(x="x1 ao quadrado",title="Gráfico de dispersão entre x1 ao quadrado e y")
-  
+  group_by(Região) %>% 
+  summarise(`Média PIB`=mean(PIB),`Desvio padrão`=sqrt(var(PIB)),Quantidade=n()) %>% 
+  tbl("PIB por Região")
 ```
-Agora a relação torna-se linear, e com correlação igual a `r round(cor(df$y,(df$x1)^2),3)`
-A correlação das outras variáveis é dada por : 
+
+
 ```{r}
-cor(df) %>% 
+df %>% 
+  group_by(Região) %>% 
+  summarise(mean=mean(PIB),std=sqrt(var(PIB)),count=n()) %>% 
+  ggplot(aes(mean,fct_reorder(Região,mean),fill=Região)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=mean), hjust=-0.002)+
+  labs(title="PIB por Região",y="Estado")
+```
+
+
+Para o eixo condição de vida, perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
+```{r}
+df %>% 
+  d(Pobreza,PIB,0.20)+
+  labs(title="Gráfico de dispersão entre Pobreza e PIB")
+```
+Pode-se ver pelo gráfico e pela correlação de `r round(cor(df$PIB,df$Pobreza),3)` que quanto maior for a taxa de pobreza do estado, menor será seu PIB.
+
+
+Para o eixo Educação, perceba a relação entre **IDHe** e  o **PIB** pelo seguinte gráfico de dispersão:
+
+```{r}
+df %>% 
+  d(IDHe,PIB,0.67)+
+  labs(title="Gráfico de dispersão entre IDHe e PIB")
+```
+Pode-se ver pelo gráfico e pela correlação de `r round(cor(df$PIB,df$IDHe),3)` que quanto maior for a IDHe, maior será seu PIB.
+
+E para o eixo População e Geográfia do Estado tem-se o gráfico de dispersão:
+
+```{r}
+df %>% 
+  d(`Densidade Demográfica`,PIB,200)+
+  labs(title="Gráfico de dispersão entre IDHe e PIB")
+```
+Duas observações se destacam das outras, pois possuem uma densidade demográfica bastante superior a média, sendo elas São Paulo e Rio de Janeiro, pelo gráfico de dispersão não fica muito claro o comportamento da relação entre PIB e Densidade Demográfica, a correlação de `r round(cor(df$PIB,df$"Densidade Demográfica"),3)` indica que é uma correlação positiva entretanto fraca.
+```{r}
+df %>% 
+  select(-UF,-Região) %>% 
+   cor() %>% 
  tbl("Correlação entre as variáveis")
 ```
 
-Podemos ver que nos valores observados, existe um pouco de correlação nas covariáveis, testaremos mais a frente a existência de multicolineriadade. 
+Podemos notar nos valores observados das variáveis que existe um pouco de correlação nas covariáveis, testaremos mais a frente a existência de multicolineriadade. 
 
-Ajustaremos a regressão com o $x_1$ ($modelo_1$) na sua forma padrão e ao quadrado ($modelo_2$)
-
-
-
-\section{Primeiro ajuste do Modelo}
-
-
-```{r mod1}
-
-df_boot=bootstraps(df,15)
-
-df_rec1=df %>% 
-  recipe(y~.)
-
-df_rec2=
+```{r mod12}
+set.seed(4)
+df_boot=
   df %>% 
-  mutate(x1=x1^2) %>% 
-  recipe(y~.) 
-  
+  select(-UF,-Região) %>% 
+  bootstraps(15)
+df1_boot=
+  df1 %>% 
+  select(-UF,-Região) %>% 
+  bootstraps(15)
 
-
+df_rec1=df %>%
+  select(-UF,-Região) %>% 
+  recipe(PIB~.)
+df_rec2=df1 %>%
+  select(-UF,-Região) %>% 
+  recipe(PIB~.)
 ```
 
 
-```{r mod2}
+```{r mod21}
 df_reg=
   linear_reg() %>% 
   set_engine("lm")
-
-```
-```{r}
+set.seed(4)
+doParallel::registerDoParallel(cores=2)
 df_work=
-   workflow_set(list(df_rec1,df_rec2),list(reg=df_reg),cross = T)
-```
+   workflow_set(list(sem_df = df_rec1, com_df = df_rec2),
+                list(reg=df_reg),cross = T)
 
-```{r}
 df_tuner=df_work %>% 
   workflow_map("tune_grid",
-               resamples=df_boot,         #pretendia ajustar outros modelos mas o tempo não permitiu
-               grid=30,
-               metrics=metric_set(rmse,rsq),verbose = T) 
-
+               resamples=df_boot,         
+               grid=15,
+               metrics=metric_set(rmse),verbose = T) 
 fit1=df_tuner %>% 
-  extract_workflow(id="recipe_1_reg") %>% 
-  fit(df)                 
-                                  
+  extract_workflow(id="com_df_reg") %>%
+  fit(df1)
+
 fit2=df_tuner %>% 
-  extract_workflow(id="recipe_2_reg") %>%
-  fit(df %>% 
-        mutate(x1=x1^2))
+  extract_workflow(id="sem_df_reg") %>%
+  fit(df)
+
 ft1=fit1$fit$fit$fit
 ft2=fit2$fit$fit$fit
+
 residuo = rstudent(ft2)
+residuo1 = rstudent(ft1)
 
+n = dim(df)[1]
+n1 = dim(df1)[1]
 ```
 
-Primeiramente a regressão com o $x_1$ tem-se um $R^2 \; ajustado=$ `r round(glance(fit1)[1,2],3)` e no modelo ajustado com $x_1^2$ tem-se `r round(glance(fit2)[1,2],3)`
 
-\section{Verificação dos pressupostos}
+\section{Análise de Influência}
+É possível notar que toda a análise descritiva foi realizada utilizando apenas os 26 estados brasileiros, sem o Distrito Federal, pois em uma Análise de Influência prévia foi demonstrado que esse estado é um ponto influente no nosso modelo, como será demonstrado nesta seção e no modelo de regressão linear. 
 
-Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo o teste para o $modelo_1$ obtém-se um p-valor < 0.001 o que indica evidências de que nosso modelo não está  bem ajustado, o teste para o $modelo_2$ possui p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem evidências contra a hipótese suposta, portanto, a partir de agora o $modelo_1$ será abandonado e toda análise seguinte será sobre o $modelo_2$, portanto a partir de agora modelo refere-se ao com $x_1$ ao quadrado.
-
-É necessário ver se existem observações atípicas no conjunto dados, que podem estar influenciando a análise:
-
-```{r}
-n=length(df$y)
-```
-\subsection{Análise de Influência}
-No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos
+No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos.
 ```{r alavancagem}
-
-h_bar=ft2$rank / n
-
+h_bar=ft2$rank/n
 hatvalues(ft2) %>% 
   graph(3*h_bar)+
-  labs(title="Alavancagem",y="Medida de Alavancagem")
-  
-
+  labs(title="Alavancagem no Banco ajustado",y="Medida de Alavancagem") +
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
 ```
+```{r alavancagem2}
+h_bar=ft1$rank/n1
+hatvalues(ft1) %>% 
+  graph(3*h_bar)+
+  labs(title="Alavancagem no Banco original",y="Medida de Alavancagem") +
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+```
+
 Temos  dffits, que informam o grau de influência que a observação $i$ tem sobre o valor seu próprio valor ajustado $\hat{y_i}$, percebe-se somente uma observação levemente fora dos limites
 ```{r dffits}
-
 dffits(ft2) %>% 
  graph(2*sqrt(ft2$rank / n))+
   labs(title="dffit")+
-  labs(title="dffit vs índice",y="dffit")
+  labs(title="dffit vs índice",y="dffit") +
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
+```
 
-  # plotly::ggplotly()
-  
-  
-
-
+```{r dffits2}
+dffits(ft1) %>% 
+ graph(2*sqrt(ft1$rank/n1))+
+  labs(title="dffit")+
+  labs(title="dffit vs índice",y="dffit") +
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
 ```
 Tem-se também a distância de cook, que fornece a influência da observação $i$ sobre todos os $n$ valores ajustados
 ```{r cook}
-
-
 cooks.distance(ft2) %>% 
   graph(4/(n-ft2$rank ))+
   labs(title="Distância de cook vs indíces",y="Dis cook")
-#
-
-
 ```
-O gráfico de resíduos também é importante para verificarmos visualmente a média dos res´sduos e se existe algum valor fora de 3 desvios padrões, pois esse possui baixíssima probabilidade de serem observados.
+O gráfico de resíduos também é importante para verificarmos visualmente a média dos resíduos e se existe algum valor fora de 3 desvios padrões, pois esses possui baixíssima probabilidade de serem observados.
 ```{r residuos}
 # residuo
  # residuo studentizado
 residuo %>% 
   graph(3)+
   geom_hline(yintercept = 0, linetype="dashed", color = "blue")+
-  labs(title="residuo vs índice",y="Resíduo")
-
-
-
+  labs(title="Residuo vs Índice",y="Resíduo")
 
 residuo %>% 
   tibble(res=.) %>% 
@@ -232,8 +267,6 @@ residuo %>%
  geom_histogram(breaks=seq(-1.993,2.289 +0.01,0.5),
                  fill="white", colour="black")+
   labs(x="Resíduo",title="Histograma dos resíduos")
-
-
 ```
 E por último tem-se o gráfico de envelope simulado, que informa se a distribuição proposta para os dados está em conforme com os valores observados, percebe-se todos os valores dentros das bandas simuladas
 ```{r env,comment=NA}
@@ -245,9 +278,20 @@ residuo %>%
   qqplotr::stat_qq_point(size=1.3) +
   scale_fill_discrete("Bandtype")+
   labs(x = "Quantis teóricos", y = "Quantis amostrais",title="Envelope Simulado")
-
-
 ```
+
+\section{Verificação dos pressupostos}
+
+Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo  o teste para o modelo de regressão obtem-se um  p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem evidências contra a hipótese suposta, portanto,
+
+É necessário ver se existem observações atípicas no conjunto dados, que podem estar influenciando a análise:
+
+```{r}
+n=length(df$Área)
+```
+
+
+
 
 \subsection{Teste de hipótese dos pressupostos}
 
@@ -271,15 +315,12 @@ E por último é necessário testar a existência de autocorrelação, usaremos 
 
 Logo, pelo testes anteriores não existem evidências contra os pressupostos teóricos, com isso podemos estabelecer inferência para os parâmetros do modelo
 ```{r média zero,include=FALSE}
-
 ## Teste t para a média dos errros
 ## H0: média dos erros eh igual a zero
 t.test(resid(ft2),mu=0,alternative="two.sided") 
-
 ```
 
 ```{r var const,include=F}
-
 ## Teste de Bressch-Pagan (Koenker) de Heteroscedasticidade
 ## H0: erros sao homoscedasticos
 lmtest::bptest(ft2, studentize = TRUE)
@@ -288,51 +329,34 @@ lmtest::bptest(ft2, studentize = TRUE)
 
 
 ```{r autocor,include=F}
-
 ## Teste de Durbin-Watson de autocorrelacao
 ## H0: : Nao autocorrelacao 
 lmtest::dwtest(ft2) 
 ```
 
 ```{r multi,include=F}
-
-
 ## Regra de bolso: vif > 10 indica multicolinearidade. vif=1 seria o ideal.
 car::vif(ft2)  
 ```
 
 ```{r normalidade,include=F}
-
 ## Teste Jarque-Bera de Normalidade
 ## H0: Os erros possuem distribuicao normal
 tseries::jarque.bera.test(residuo)
-
 ```
 \section{Ajuste final}
 
 Tem-se  portanto como resumo do modelo final a seguinte tabela:
 ```{r}
-
-   
 tidy(fit2) %>% 
   select(-statistic) %>% 
   kable(caption="Resumo do modelo final",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 4) %>% 
   kable_classic(latex_options = "HOLD_position") 
 ```
-Que informa que o intercepto e o coeficiente de $x_2$ não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente $99$% da variação da variável y é explicada pelas covariáveis propostas.
+Que informa que o intercepto  não são significativos a 1%, tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente `r round(glance(ft2)[1],3)*100`% da variação do PIB dos estados é explicada pelas covariáveis propostas.
 
 \section{Comentário} 
-O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/RegressaoATV_2).
+O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/gdp-statesBR).
 
-
-```{r}
-fit <- lm(GDP~.,data=df1) 
-stats::step(fit)
-jarque.bera.test(resid(fit))
-fit2 <- lm(formula = GDP ~ `Passengers rate` + `HDI Education 2017` + 
-    `HDI Wealth 2017` + `HDI Health 2017` + Population + Poverty + `Private beds per citizen`, data = df1)
-jarque.bera.test(resid(fit2))
-resettest(fit2)
-```
-
+[^1]: Evidentemente, a escolha de colocar mais modelos foi só por motivos de comparação de desempenho, não foi aprofundado i.e, realizado seperação entre treino e  teste etc
 

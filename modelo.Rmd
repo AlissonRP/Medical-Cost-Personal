@@ -1,0 +1,136 @@
+---
+title: "Trabalho 2 Análise de Regressão"
+author: "Alisson Rosa e Vítor Perira"
+header-includes:
+   - \usepackage[brazil]{babel}
+geometry: margin=2cm
+output:
+  bookdown::pdf_document2:
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup,include=F}
+ 
+library('tidyverse')
+library("tidymodels")
+library('kableExtra')
+options(digits=3)
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.9, fig.height=3.7)
+scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
+df=read_csv("https://raw.githubusercontent.com/AlissonRP/gdp-statesBR/main/df")
+df=df %>% 
+  select(UF,PIB=GDP,IDHe=`HDI Education 2017`,Área=Area,`Densidade Demográfica`=`Demographic Density`,Pobreza=Poverty,Região=Region) %>% 
+    mutate(Região=fct_recode(Região,"Norte"="North",
+                             "Nordeste"="Northeast",
+                             "Centro-oeste"="Center-west",
+                              "Sudeste"="Southeast",
+                              "Sul"="South")) %>% 
+                              .[-7,]  
+  
+```
+
+
+```{r, funções}
+#Dispersão/ correlação
+d=function(df,v1,v2,px){
+  df %>% 
+    ggplot(aes({{v1}},{{v2}})) +
+    geom_point(size=2.1,color="red")+
+    annotate(x=px, y=55000, 
+         label=paste("Correlação= ", round(cor(df %>% 
+                                         select({{v1}}),df %>% 
+                                         select({{v2}})),2)), 
+         geom="text", size=5)+
+    ggrepel::geom_text_repel(aes(label=UF),size=2.8,point.padding = 0.3)
+}
+tbl=function(v,tit){
+  v %>% 
+    kable(caption=tit,align = "c") %>% 
+  kable_classic(latex_options = "HOLD_position") 
+}
+graph=function(df,l){
+  df %>% 
+    as_tibble() %>% 
+      ggplot(aes(as.numeric(row.names(df  %>% as_tibble())),value))+
+      geom_point(shape=1)+
+      geom_hline(yintercept=l, linetype="dashed", color = "red")+
+      geom_hline(yintercept=-l, linetype="dashed", color = "red")+
+      labs(x="Índice")
+    
+}
+```
+
+\section{Ajuste dos Modelos}
+Nessa seção serão ajustados os modelos de regressão linear, rf e knn [^1], usando as covariáveis já citadas.  
+Os hiperparâmetros dos modelos que possuem, foram encontrados por otimização, tentando minimizar a raiz do erro quadrático médio (rmse). O seguinte gráfico ilustra o rmse para cada modelo 
+
+```{r mod1}
+set.seed(4)
+df_boot=
+  df %>% 
+  select(-UF,-Região) %>% 
+  bootstraps(15)
+df_rec1=df %>%
+  select(-UF,-Região) %>% 
+  recipe(PIB~.)
+```
+
+
+```{r mod2}
+df_reg=
+  linear_reg() %>% 
+  set_engine("lm")
+df_rf=
+  rand_forest(trees=500,mtry=3,min_n =7) %>% 
+  set_mode("regression") %>% 
+  set_engine("randomForest",importance = "impurity")
+df_knn= nearest_neighbor(mode="regression",neighbors =8) %>% 
+  set_engine("kknn")
+```
+```{r}
+df_work=
+   workflow_set(list(df_rec1),list(reg=df_reg,rf=df_rf,knn=df_knn),cross = T)
+```
+
+```{r}
+set.seed(4)
+doParallel::registerDoParallel(cores=2)
+df_tuner=df_work %>% 
+  workflow_map("tune_grid",
+               resamples=df_boot,         
+               grid=15,
+               metrics=metric_set(rmse),verbose = T) 
+autoplot(df_tuner)+
+  labs(title="Comparação dos modelos ajustados",x="Rank do modelo",y="rmse")+
+  theme(legend.title = element_blank())
+rank_results(df_tuner,rank_metric = "rmse") %>% view()
+fit1=df_tuner %>% 
+  extract_workflow(id="recipe_rf") %>% 
+  fit(df)                 
+                                  
+fit2=df_tuner %>% 
+  extract_workflow(id="recipe_reg") %>%
+  fit(df)
+ft1=fit1$fit$fit$fit
+ft2=fit2$fit$fit$fit
+residuo = rstudent(ft2)
+```
+Perceba que a rf possui um rmse menor (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[1,4]`) e a regressão linear possui o maior erro padrão (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[2,5]`)
+
+Em termos da rf as variáveis que possuem a maior importância são dadas pelo seguinte gráfico 
+
+```{r}
+fit1 %>% 
+extract_fit_parsnip() %>% 
+  vip::vip(num_features = 4)+
+  labs(y="Importância",title="Importância das Variáveis na rf")
+```
+Note que a variável Área é que a possui menor importância e Pobreza que a tem mais importância
+
+
+[^1]: Evidentemente, a escolha de colocar mais modelos foi só por motivos de comparação de desempenho, não foi aprofundado i.e, realizado seperação entre treino e  teste etc
+
+
+
