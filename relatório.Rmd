@@ -382,15 +382,14 @@ Que informa que o intercepto  não são significativos a 1%, tem-se um p-valor <
 Assim um estado com IDHe máximo (1) adicionaria 70.391,625 reais ao PIB per capita, sendo o maior IDHe existente 0,828 e o maior PIB per capita 47008,77, da mesma maneira que um estado com a Incidência de Pobreza máxima (1), sendo o maior existente 0,263, reduziria 80336,96 reais na variável. A influência da área é de apenas 0,004, ou seja, a cada 1 $km^2$ adiciona 0,004 reais ao PIB per capita, assim como a influência da densidade demográfica é que a cada 1 $hab/km^2$ adiciona 22,830 reais.
 
 \section{Apêndice}
-Temos conteúdos extras ao trabalho principal que serão linkados nessa seção, que estão relacionados ao objetivo, mas não correspondem ao fundamental do projeto, porém são interessantes para amplificar a análise do PIB per capita.
-
-\subsection{Apêndice A: Modelagem}
-Neste apêndice serão analisados outros modelos preditivos junto com o regressão linear, como os modelos de florestas aleatórias (rf) e os k-vizinhos mais próximos (knn), que pode ser acessado clicando [aqui](encurtador.com.br/puPS6).
+Temos conteúdo extra ao trabalho principal que serão linkados nessa seção, que estão relacionados ao objetivo, mas não correspondem ao fundamental do projeto, porém são interessantes para os leitores mais interessados.
 
 
-\subsection{Apêndice B: Análise Descritiva, influência e pressupostos Extra}
 
-Neste apêndice serão feitas análises extras que são interessante para a compreensão da variável desfecho, mas não necessariamente fundamentais, que pode ser acessado clicando [aqui](https://github.com/AlissonRP).
 
-\subsection{Apêndice C: Código Completo}
+\subsection{Apêndice A: Análise Descritiva, influência e pressupostos Extra}
+
+Neste apêndice serão feitas análises extras que são interessante para a compreensão da variável desfecho, mas não necessariamente fundamentais, que pode ser acessado clicando [aqui](encurtador.com.br/puPS6).
+
+\subsection{Apêndice B: Código Completo}
 O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/gdp-statesBR/blob/main/código.Rmd).
