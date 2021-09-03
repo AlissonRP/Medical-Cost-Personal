@@ -1,0 +1,147 @@
+---
+title: "Atividade Avaliativa 3 - Análise Extra"
+author: "Alisson Rosa e Vítor Perira"
+header-includes:
+   - \usepackage[brazil]{babel}
+geometry: margin=2cm
+output:
+  bookdown::pdf_document2:
+editor_options:
+  chunk_output_type: console
+---
+
+```{r setup,include=F}
+library('tidyverse')
+library("tidymodels")
+library('kableExtra')
+library('ggpubr')
+options(digits=3)
+options(scipen=999)
+options(OutDec=",")
+theme_set(theme_bw())
+knitr::opts_chunk$set(echo=FALSE,message=F,warning=F,fig.pos = 'H',fig.align = 'center',fig.width=7.8, fig.height=4)
+scale_fill_discrete = \(...) scale_fill_brewer(... , palette="Set2")
+df=read_csv("https://raw.githubusercontent.com/AlissonRP/gdp-statesBR/main/df")
+
+df=df %>% 
+  select(UF,PIB=GDP,IDHe=`HDI Education 2017`,Área=Area,`Densidade Demográfica`=`Demographic Density`,Pobreza=Poverty,Região=Region) %>% 
+    mutate(Região=fct_recode(Região,"Norte"="North",
+                             "Nordeste"="Northeast",
+                             "Centro-oeste"="Center-west",
+                              "Sudeste"="Southeast",
+                              "Sul"="South")) 
+df1 = df  
+df = df[-7,]
+
+```
+
+
+```{r, funções}
+#Dispersão/ correlação
+d=function(df,v1,v2,px){
+  df %>% 
+    ggplot(aes({{v1}},{{v2}})) +
+    geom_point(size=2.1,color="red")+
+    annotate(x=px, y=55000, 
+         label=paste("Correlação= ", round(cor(df %>% 
+                                         select({{v1}}),df %>% 
+                                         select({{v2}})),2)), 
+         geom="text", size=5)+
+    ggrepel::geom_text_repel(aes(label=UF),size=2.8,point.padding = 0.3)
+}
+
+tbl=function(v,tit){
+  v %>% 
+    kable(caption=tit,align = "c") |> 
+  kable_classic(latex_options = "HOLD_position") 
+}
+
+graph=function(df,l){
+  df %>% 
+    as_tibble() %>% 
+      ggplot(aes(as.numeric(row.names(df  %>% as_tibble())),value))+
+      geom_point()+
+      geom_hline(yintercept=l, linetype="dashed", color = "red")+
+      geom_hline(yintercept=-l, linetype="dashed", color = "red")+
+      labs(x="Índice")
+    
+}
+```
+
+```{r mod12}
+set.seed(4)
+df_boot=
+  df %>% 
+  select(-UF,-Região) %>% 
+  bootstraps(15)
+df1_boot=
+  df1 %>% 
+  select(-UF,-Região) %>% 
+  bootstraps(15)
+
+df_rec1=df %>%
+  select(-UF,-Região) %>% 
+  recipe(PIB~.)
+df_rec2=df1 %>%
+  select(-UF,-Região) %>% 
+  recipe(PIB~.)
+```
+
+```{r mod21}
+df_reg=
+  linear_reg() %>% 
+  set_engine("lm")
+set.seed(4)
+doParallel::registerDoParallel(cores=2)
+df_work=
+   workflow_set(list(sem_df = df_rec1, com_df = df_rec2),
+                list(reg=df_reg),cross = T)
+
+df_tuner=df_work %>% 
+  workflow_map("tune_grid",
+               resamples=df_boot,         
+               grid=15,
+               metrics=metric_set(rmse),verbose = T) 
+fit1=df_tuner %>% 
+  extract_workflow(id="com_df_reg") %>%
+  fit(df1)
+
+fit2=df_tuner %>% 
+  extract_workflow(id="sem_df_reg") %>%
+  fit(df)
+
+ft1=fit1$fit$fit$fit
+ft2=fit2$fit$fit$fit
+
+residuo = rstudent(ft2)
+residuo1 = rstudent(ft1)
+
+n = dim(df)[1]
+n1 = dim(df1)[1]
+```
+
+\section{Análise de Influência - DFBETAS}
+No diagnóstico dfbetas, que informam o grau de influência que a observação $i$ tem sobre o coeficiente $\hat{x_i}$, ou seja, sobre os parâmetros $\hat{\beta_i}$. Então é uma medida completar ao DFFITS, que verifica a influência de $i$ tem sobre o valor seu próprio valor ajustado $\hat{y_i}$.
+
+\subsection{DFBETAS - Modelo Original}
+Nesta seção teremos as análises dos DFBETAS para o modelo inicial com o DF.
+```{r}
+dfb1<-dfbetas(ft1)[,1]
+dfb2<-dfbetas(ft1)[,2]
+dfb3<-dfbetas(ft1)[,3]
+dfb4<-dfbetas(ft1)[,4]
+dfb5<-dfbetas(ft1)[,5]
+dfb1 <- dfb1 %>% 
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 1 vs índice",y="Dfbetas") 
+dfb2 <- dfb2 %>% 
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 1 vs índice",y="Dfbetas")
+ggarrange(dfb1, dfb2, 
+          labels = c("A", "B"),
+          ncol = 2, nrow = 1)
+
+```
+

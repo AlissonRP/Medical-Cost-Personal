@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.24)  3 SEP 2021 02:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.24)  3 SEP 2021 06:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -841,21 +841,21 @@ File: relatório_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pd
 f)
 <use relatório_files/figure-latex/unnamed-chunk-8-1.pdf>
 Package pdftex.def Info: relatório_files/figure-latex/unnamed-chunk-8-1.pdf  u
-sed on input line 298.
+sed on input line 290.
 (pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[10] [11pdfTeX warning (ext4): destination with the same identifier (name{table
-.4}) has been already used, duplicate ignored
+[10 <./relatório_files/figure-latex/unnamed-chunk-8-1.pdf>] [11pdfTeX warning 
+(ext4): destination with the same identifier (name{table.4}) has been already u
+sed, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.335 \section
-              {Apêndice} <./relatório_files/figure-latex/unnamed-chunk-8-1.pd
-f>] [12] (./relatório.aux)
+l.343 \end{document}
+                    ] (./relatório.aux)
 Package rerunfilecheck Info: File `relatório.out' has not changed.
 (rerunfilecheck)             Checksum: 1053B823FF8A24EF241A3BE8134FA16D;1550.
  ) 
 Here is how much of TeX's memory you used:
- 13069 strings out of 480502
- 198202 string characters out of 5898165
+ 13068 strings out of 480502
+ 198195 string characters out of 5898165
  525801 words of memory out of 5000000
  30457 multiletter control sequences out of 15000+600000
  448821 words of font info for 66 fonts, out of 8000000 for 9000
@@ -873,10 +873,10 @@ pe1/public/lm/lmr10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts
 /type1/public/lm/lmr12.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fo
 nts/type1/public/lm/lmr17.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist
 /fonts/type1/public/lm/lmr7.pfb>
-Output written on relatório.pdf (12 pages, 281225 bytes).
+Output written on relatório.pdf (11 pages, 280664 bytes).
 PDF statistics:
- 261 PDF objects out of 1000 (max. 8388607)
- 198 compressed objects within 2 object streams
- 27 named destinations out of 1000 (max. 500000)
+ 257 PDF objects out of 1000 (max. 8388607)
+ 195 compressed objects within 2 object streams
+ 26 named destinations out of 1000 (max. 500000)
  148 words of extra memory for PDF output out of 10000 (max. 10000000)
 
