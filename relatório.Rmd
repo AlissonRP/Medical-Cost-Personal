@@ -1,5 +1,5 @@
 ---
-title: "Atividade Avaliativa 3 - Análise de Regressão Prática"
+title: "Uma breve análise sobre o PIB per capita dos Estados Brasileiros no ano de 2019"
 author: "Alisson Rosa e Vítor Perira"
 header-includes:
    - \usepackage[brazil]{babel}
@@ -59,9 +59,9 @@ graph=function(df,l){
   df %>% 
     as_tibble() %>% 
       ggplot(aes(as.numeric(row.names(df  %>% as_tibble())),value))+
-      geom_point()+
-      geom_hline(yintercept=l, linetype="dashed", color = "red")+
-      geom_hline(yintercept=-l, linetype="dashed", color = "red")+
+      geom_point(color="red")+
+      geom_hline(yintercept=l, linetype="dashed", color = "navy")+
+      geom_hline(yintercept=-l, linetype="dashed", color = "navy")+
       labs(x="Índice")
     
 }
@@ -76,7 +76,7 @@ A proposta do respectivo trabalho é predizer o produto interno bruto per capita
 
 **Área** : Refere-se a área em km de cada estado no ano de 2019; 
 
-**Índice de Desenvolvimento Humano (IDHe) Educacional**: Refere-se ao IDH educacional no de ano de 2017, a escolha das covariáveis foram para conter três eixos:
+**Índice de Desenvolvimento Humano  Educacional** (IDHe) : Refere-se ao IDH educacional no de ano de 2017, a escolha das covariáveis foram para conter três eixos:
 
 **População e Geográfia do Estado**: Área e Densidade Demográfica;
 
@@ -99,22 +99,23 @@ df %>%
   tbl("Resumo das variáveis: ")
 ```
 Note pelo seguinte gráfico que os estados da região Norte estão bem próximos da média do PIB per capita por estado (`r mean(df$PIB)`), SP  e RJ estão bem acima e os estados da região nordeste estão bem abaixo.
-```{r}
+```{r graphstates}
 df %>% 
   ggplot(aes(PIB,fct_reorder(UF,PIB),fill=Região)) +
   geom_bar(stat="identity")+
-  geom_text(aes(label=PIB), hjust=-0.002)+
+  geom_text(aes(label=PIB), hjust=-0.007,size=3.6)+
   labs(title="PIB por estado",y="Estado") + scale_x_continuous(
-    expand = c(0, 0),limits = c(0, 55000))
+    expand = c(0.01, 0),limits = c(0, 55000))
 ```
 A titulo de curiosidade vejamos o PIB por região
 
-```{r}
+```{r }
 df %>% 
   group_by(Região) %>% 
-  summarise(`Média PIB`=mean(PIB),`Desvio padrão`=sqrt(var(PIB)),Quantidade=n()) %>% 
+  summarise(`Média PIB`=mean(PIB),`Desvio padrão`=sqrt(var(PIB)), Estados=n()) %>% 
   tbl("PIB por Região")
 ```
+Note que, em média a região Sul possui maior PIB médio e com menor variância tendo em vista também o gráfico \@ref(fig:graphstates), e a região Sudeste possui a maior variação no PIB dado o fato que possui duas regiões com PIBs discrepantes em relação aos demais.  
 
 Para o eixo condição de vida, perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
 ```{r}
@@ -152,51 +153,32 @@ df %>%
 
 Podemos notar nos valores observados das variáveis que existe um pouco de correlação nas covariáveis, testaremos mais a frente a existência de multicolineriadade. 
 
-```{r mod12}
+```{r mod1}
 set.seed(4)
-df_boot=
-  df %>% 
-  select(-UF,-Região) %>% 
-  bootstraps(15)
-df1_boot=
-  df1 %>% 
-  select(-UF,-Região) %>% 
-  bootstraps(15)
 
-df_rec1=df %>%
-  select(-UF,-Região) %>% 
-  recipe(PIB~.)
-df_rec2=df1 %>%
-  select(-UF,-Região) %>% 
-  recipe(PIB~.)
 ```
 
 
 ```{r mod21}
-df_reg=
+fit1=
   linear_reg() %>% 
-  set_engine("lm")
-set.seed(4)
-doParallel::registerDoParallel(cores=2)
-df_work=
-   workflow_set(list(sem_df = df_rec1, com_df = df_rec2),
-                list(reg=df_reg),cross = T)
+  set_engine("lm") %>% 
+  fit(PIB~.,data=df1 %>% 
+        select(-UF,-Região))
 
-df_tuner=df_work %>% 
-  workflow_map("tune_grid",
-               resamples=df_boot,         
-               grid=15,
-               metrics=metric_set(rmse),verbose = T) 
-fit1=df_tuner %>% 
-  extract_workflow(id="com_df_reg") %>%
-  fit(df1)
+fit2=
+  linear_reg() %>% 
+  set_engine("lm") %>% 
+  fit(PIB~.,data=df %>% 
+        select(-UF,-Região))
+  
 
-fit2=df_tuner %>% 
-  extract_workflow(id="sem_df_reg") %>%
-  fit(df)
 
-ft1=fit1$fit$fit$fit
-ft2=fit2$fit$fit$fit
+
+
+
+ft1=fit1$fit
+ft2=fit2$fit
 
 residuo = rstudent(ft2)
 residuo1 = rstudent(ft1)
@@ -212,8 +194,9 @@ n1 = dim(df1)[1]
 Então é necessário ver se existem observações atípicas no conjunto dados, que podem estar influenciando a análise:
 
 No gráfico a seguir vemos as medidas de alavancagem, que  informam se uma observação é discrepante em termos de covariável, nota-se que apenas uma observação está um pouco fora dos limites pré-estabelecidos:
+
 ```{r alavancagem}
-h_bar=ft2$rank/n
+h_bar=ft2$rank/ n
 hatvalues(ft2) %>% 
   graph(3*h_bar)+
   labs(title="Alavancagem no banco ajustado",y="Medida de Alavancagem") +
@@ -230,22 +213,24 @@ hatvalues(ft1) %>%
 ```
 
 No diagnóstico dffits, que informam o grau de influência que a observação $i$ tem sobre o valor seu próprio valor ajustado $\hat{y_i}$, percebe-se somente uma observação levemente fora dos limites:
+
 ```{r dffits}
 dffits(ft2) %>% 
  graph(2*sqrt(ft2$rank / n))+
-  labs(title="dffit")+
   labs(title="Dffits do banco ajustado",y="Dffits") +
     ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
 ```
 No Dffits do banco original, podemos perceber que o DF é um candidato a ponto de influencia, por estar muito acima do limite, achatando o gráfico e o RJ um pouco abaixo do limite:
+
 ```{r dffits2}
 dffits(ft1) %>% 
  graph(2*sqrt(ft1$rank/n1))+
-  labs(title="dffit")+
   labs(title="Dffits do banco original",y="Dffits") +
     ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
 ```
+
 Tem-se também a distância de cook, que fornece a influência da observação $i$ sobre todos os $n$ valores ajustados, novamente com apenas o RJ acima dos limites estipulados:
+
 ```{r cook}
 cooks.distance(ft2) %>% 
   graph(4/(n-ft2$rank ))+
@@ -253,31 +238,37 @@ cooks.distance(ft2) %>%
     ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
 ```
 Na Distância de Cook do banco inicial podemos ver que o DF reincidente como um ponto extremamente fora dos limites achatando o gráfico, e o RJ também está acima:
+
 ```{r cook1}
 cooks.distance(ft1) %>% 
   graph(4/(n1-ft1$rank ))+
   labs(title="Distância de Cook do banco original",y="Dis cook") +
     ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+
 ```
 O gráfico de resíduos também é importante para verificarmos visualmente a média dos resíduos e se existe algum valor fora do limite de 3 desvios padrões, pois esses possui baixíssima probabilidade de serem observados, no gráfico abaixo verificamos que todos os estados estão dentro dos limites: 
+
 ```{r residuos}
 # residuo
  # residuo studentizado
 residuo %>% 
   graph(3)+
-  geom_hline(yintercept = 0, linetype="dashed", color = "blue")+
+  geom_hline(yintercept = 0, linetype="dotted", color = "deepskyblue2")+
   labs(title="Residuos do Banco Ajustado",y="Resíduo")+
     ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
 ```
+
 Abaixo percebemos que também no gráfico de resíduos studentizados, o DF é um candidato a ponto influente do modelo, assim como o RJ, porém no modelo ajustado, o RJ não fica fora do limite, tornando assim mais uma evidência da influência do DF no modelo:
+
 ```{r residuos1}
 residuo1 %>% 
   graph(3)+
-  geom_hline(yintercept = 0, linetype="dashed", color = "blue")+
+  geom_hline(yintercept = 0, linetype="dotted", color = "deepskyblue2")+
   labs(title="Residuos do Banco Original",y="Resíduo")+
     ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
 ```
 E por último tem-se o gráfico de envelope simulado, que informa se a distribuição proposta para os dados está em conforme com os valores observados, percebe-se todos os valores dentros das bandas simuladas:
+
 ```{r env,comment=NA}
 residuo %>% 
   as_tibble() %>% 
@@ -288,16 +279,19 @@ residuo %>%
   scale_fill_discrete("Bandtype")+
   labs(x = "Quantis teóricos", y = "Quantis amostrais",title="Envelope Simulado banco ajustado")
 ```
+
 Ao extremo contrário do envelope simulado do banco original, em que podemos perceber pontos na borda e fora das bandas simuladas: 
+
 ```{r env2,comment=NA}
 residuo1 %>% 
   as_tibble() %>% 
   ggplot(aes(sample = value)) +
-  qqplotr::geom_qq_band(alpha = 0.5, fill="white", col="black",B=150,bandType = "boot") +
+  qqplotr::geom_qq_band(alpha = 0.5, fill="white", col="black",B=150,bandType = "pointwise") +
   qqplotr::stat_qq_line(size=0.5, linetype="dashed") + 
   qqplotr::stat_qq_point(size=1.3) +
   scale_fill_discrete("Bandtype")+
   labs(x = "Quantis teóricos", y = "Quantis amostrais",title="Envelope Simulado banco original")
+
 ```
 
 \section{Verificação dos pressupostos}
