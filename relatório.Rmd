@@ -42,7 +42,7 @@ d=function(df,v1,v2,px){
     ggplot(aes({{v1}},{{v2}})) +
     geom_point(size=2.1,color="red")+
     annotate(x=px, y=55000, 
-         label=paste("Correlação= ", round(cor(df %>% 
+         label=paste("Correlação=", round(cor(df %>% 
                                          select({{v1}}),df %>% 
                                          select({{v2}})),2)), 
          geom="text", size=5)+
@@ -68,7 +68,7 @@ graph=function(df,l){
 ```
 
 \section{Introdução}
-A proposta do respectivo trabalho é predizer o produto interno bruto per capita (PIB per capita) de 26 estados do Brasil no ano de 2019, os dados foram extraidos de planinhas disponíveis no site do Instituto Brasileiro de Geografia e Estatística (IBGE) para isso utiliza-se  como variáveis explicativas (covariáveis):
+A proposta do respectivo trabalho é predizer o produto interno bruto per capita (PIB) de 26 estados do Brasil no ano de 2019, os dados foram extraidos de planinhas disponíveis no site do Instituto Brasileiro de Geografia e Estatística (IBGE) para isso utiliza-se  como variáveis explicativas (covariáveis):
 
 **Pobreza**: Que fornece a taxa de extrema pobreza no ano 2019;
 
@@ -78,11 +78,10 @@ A proposta do respectivo trabalho é predizer o produto interno bruto per capita
 
 **Índice de Desenvolvimento Humano  Educacional** (IDHe) : Refere-se ao IDH educacional no de ano de 2017, a escolha das covariáveis foram para conter três eixos:
 
-**População e Geográfia do Estado**: Área e Densidade Demográfica;
+*População e Geográfia do Estado*: Área e Densidade Demográfica;
+**Condição de Vida*: Pobreza;
 
-**Condição de Vida**: Pobreza;
-
-**Educação** : IDHe.
+*Educação* : IDHe.
 
 
 \section{Análise Descritiva}
@@ -105,9 +104,9 @@ df %>%
   geom_bar(stat="identity")+
   geom_text(aes(label=PIB), hjust=-0.007,size=3.6)+
   labs(title="PIB por estado",y="Estado") + scale_x_continuous(
-    expand = c(0.01, 0),limits = c(0, 55000))
+    expand = c(0.01, 0),limits = c(0, 53000))
 ```
-A titulo de curiosidade vejamos o PIB por região
+A título de curiosidade vejamos o PIB por região
 
 ```{r }
 df %>% 
@@ -115,7 +114,7 @@ df %>%
   summarise(`Média PIB`=mean(PIB),`Desvio padrão`=sqrt(var(PIB)), Estados=n()) %>% 
   tbl("PIB por Região")
 ```
-Note que, em média a região Sul possui maior PIB médio e com menor variância tendo em vista também o gráfico \@ref(fig:graphstates), e a região Sudeste possui a maior variação no PIB dado o fato que possui duas regiões com PIBs discrepantes em relação aos demais.  
+Note que, em média a região Sul possui maior PIB médio e com menor variância tendo em vista também o gráfico \@ref(fig:graphstates), a região Sudeste possui a maior variação no PIB dado o fato que possui duas regiões com PIBs discrepantes em relação aos demais.  
 
 Para o eixo condição de vida, perceba a relação entre **Pobreza** e e o **PIB** pelo seguinte gráfico de dispersão:
 ```{r}
@@ -293,13 +292,6 @@ residuo1 %>%
   labs(x = "Quantis teóricos", y = "Quantis amostrais",title="Envelope Simulado banco original")
 
 ```
-
-\section{Verificação dos pressupostos}
-
-Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo o teste para o modelo de regressão ajustado obtem-se um  p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem evidências contra a hipótese suposta.
-
-No entanto considerando o banco de dados original obtem-se um p-valor de `r lmtest::resettest(ft1)$p.value`, então rejeitamos a hipótese nula e concluímos que não há evidências para considerar o modelo do banco de dados original, contendo o Distrito Federal, corretamente especificado. Assim usaremos o modelo ajustado.
-
 **Por que o Distrito Federal é um ponto influente?**
 
 
@@ -307,11 +299,18 @@ Porque é a capital do páis, sendo assim a única das 27 unidades federativas q
 
 Notamos que por ser uma unidade federativa com a menor área, porém com grande relevância política, com o maior IDH e a maior densidade demográfica, sendo essas nossas covariáveis, pois em sua maioria é composto por pessoas ligadas a instituições públicas.
 
+\section{Verificação dos pressupostos}
+
+Precisamos primeiramente testar se os modelos estão corretamente especificados, faremos pelo teste Reset que tem como hipótese nula que o modelo está corretamente especificado, fazendo o teste para o modelo de regressão ajustado obtem-se um  p-valor igual a `r lmtest::resettest(ft2)$p.value` que nos informa que não existem indicativos contra a hipótese suposta.
+
+No entanto considerando o banco de dados original obtem-se um p-valor de `r lmtest::resettest(ft1)$p.value`, então rejeitamos a hipótese nula e concluímos que  há indicativos para  utilizarmos o modelo do banco de dados original, contendo o Distrito Federal. Assim lidaremos com  o modelo ajustado.
+
+
 Agora iremos verificar os seguintes pressupostos, para utilização correta do modelo de regressão linear: 
 
-Amedia dos erros é zero, Homoscedasticidade dos erros, Não-autocorrelação, Ausência de Multicolinearidade e Normalidade dos erros.
+Precisamos testar se os erros ($\epsilon_i$) possuem média zero, variância constante, não-autocorrelação, e seguem uma distribuição normal ($N$) . Podemos encapsular todos esses pressupostos dizendo que $\epsilon_i \sim N(0,\sigma^2)$, ainda é necessário também testar não dependência linear entre as covariáveis.
 
-Primeiramente vamos testar se os erros ($\epsilon$) possuem média zero, para isso usaremos um teste t que tem  como  hipótese:
+Primeiramente vamos testar se os erros  possuem média zero, para isso usaremos um teste t que tem  como  hipótese:
  $$H_0: E(\epsilon_i)= 0$$ 
 Obtem-se um p-valor >> $0.1$, portanto manteremos a hipótese de média nula dos erros.
 
@@ -382,7 +381,7 @@ Que informa que o intercepto  não são significativos a 1%, tem-se um p-valor <
 Assim um estado com IDHe máximo (1) adicionaria 70.391,625 reais ao PIB per capita, sendo o maior IDHe existente 0,828 e o maior PIB per capita 47008,77, da mesma maneira que um estado com a Incidência de Pobreza máxima (1), sendo o maior existente 0,263, reduziria 80336,96 reais na variável. A influência da área é de apenas 0,004, ou seja, a cada 1 $km^2$ adiciona 0,004 reais ao PIB per capita, assim como a influência da densidade demográfica é que a cada 1 $hab/km^2$ adiciona 22,830 reais.
 
 \section{Apêndice}
-Temos conteúdo extra ao trabalho principal que serão linkados nessa seção, que estão relacionados ao objetivo, mas não correspondem ao fundamental do projeto, porém são interessantes para os leitores mais interessados.
+Temos conteúdo extra ao trabalho principal que serão linkados nessa seção, que estão relacionados ao objetivo, mas não correspondem ao fundamental do projeto, porém são pertinentes para os leitores mais interessados.
 
 
 
