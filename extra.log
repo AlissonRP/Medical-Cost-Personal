@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.24)  3 SEP 2021 23:23
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.24)  4 SEP 2021 01:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -715,72 +715,102 @@ n input line 112.
 
 {c:/Users/user/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex
 .map}]
-<extra_files/figure-latex/unnamed-chunk-2-1.pdf, id=54, 563.10374pt x 289.08pt>
+<extra_files/figure-latex/unnamed-chunk-1-2.pdf, id=54, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-1-2.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-1-2.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-1-2.pdf  used o
+n input line 114.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+<extra_files/figure-latex/unnamed-chunk-1-3.pdf, id=55, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-1-3.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-1-3.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-1-3.pdf  used o
+n input line 116.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+[2 <./extra_files/figure-latex/unnamed-chunk-1-1.pdf> <./extra_files/figure-lat
+ex/unnamed-chunk-1-2.pdf>]
+<extra_files/figure-latex/unnamed-chunk-2-1.pdf, id=72, 563.10374pt x 289.08pt>
 
 File: extra_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file (type pdf)
 <use extra_files/figure-latex/unnamed-chunk-2-1.pdf>
 Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-2-1.pdf  used o
-n input line 120.
+n input line 124.
 (pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[2 <./extra_files/figure-latex/unnamed-chunk-1-1.pdf> <./extra_files/figure-lat
+<extra_files/figure-latex/unnamed-chunk-2-2.pdf, id=73, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-2-2.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-2-2.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-2-2.pdf  used o
+n input line 126.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+[3 <./extra_files/figure-latex/unnamed-chunk-1-3.pdf> <./extra_files/figure-lat
 ex/unnamed-chunk-2-1.pdf>]
+<extra_files/figure-latex/unnamed-chunk-2-3.pdf, id=90, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-2-3.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-2-3.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-2-3.pdf  used o
+n input line 128.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+[4 <./extra_files/figure-latex/unnamed-chunk-2-2.pdf> <./extra_files/figure-lat
+ex/unnamed-chunk-2-3.pdf>]
 LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-72.
+80.
 (c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-<extra_files/figure-latex/unnamed-chunk-5-1.pdf, id=71, 563.10374pt x 289.08pt>
-
+<extra_files/figure-latex/unnamed-chunk-5-1.pdf, id=107, 563.10374pt x 289.08pt
+>
 File: extra_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
 <use extra_files/figure-latex/unnamed-chunk-5-1.pdf>
 Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-5-1.pdf  used o
-n input line 174.
+n input line 182.
 (pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[3pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
+[5pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.174 ...ure-latex/unnamed-chunk-5-1} \end{center}
-                                                  pdfTeX warning (ext4): destin
-ation with the same identifier (name{table.2}) has been already used, duplicate
- ignored
+l.210 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.2
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.174 ...ure-latex/unnamed-chunk-5-1} \end{center}
-                                                  ] [4pdfTeX warning (ext4): de
-stination with the same identifier (name{table.3}) has been already used, dupli
-cate ignored
+l.210 
+       <./extra_files/figure-latex/unnamed-chunk-5-1.pdf>] [6pdfTeX warning (ex
+t4): destination with the same identifier (name{table.3}) has been already used
+, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.251 \end{table}
-                 pdfTeX warning (ext4): destination with the same identifier (n
-ame{table.4}) has been already used, duplicate ignored
+l.288 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.4
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.251 \end{table}
-                  <./extra_files/figure-latex/unnamed-chunk-5-1.pdf>] [5pdfTeX 
-warning (ext4): destination with the same identifier (name{table.5}) has been a
-lready used, duplicate ignored
+l.288 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.5
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.287 \end{document}
-                    pdfTeX warning (ext4): destination with the same identifier
- (name{table.6}) has been already used, duplicate ignored
+l.288 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.6
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.287 \end{document}
-                    ] (./extra.aux)
+l.288 
+      ] [7] (./extra.aux)
 Package rerunfilecheck Info: File `extra.out' has not changed.
 (rerunfilecheck)             Checksum: 83D06A3FA853CE7B899E7B90D838D91C;1131.
  ) 
 Here is how much of TeX's memory you used:
- 12987 strings out of 480502
- 193706 string characters out of 5898165
- 525777 words of memory out of 5000000
- 30390 multiletter control sequences out of 15000+600000
+ 13025 strings out of 480502
+ 195510 string characters out of 5898165
+ 532160 words of memory out of 5000000
+ 30422 multiletter control sequences out of 15000+600000
  449186 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,9n,66p,571b,415s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,9n,66p,658b,415s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.en
 c}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.e
 nc}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-math
@@ -794,10 +824,10 @@ ype1/public/lm/lmr10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/font
 s/type1/public/lm/lmr12.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/f
 onts/type1/public/lm/lmr17.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dis
 t/fonts/type1/public/lm/lmr7.pfb>
-Output written on extra.pdf (5 pages, 211630 bytes).
+Output written on extra.pdf (7 pages, 229387 bytes).
 PDF statistics:
- 147 PDF objects out of 1000 (max. 8388607)
- 114 compressed objects within 2 object streams
- 20 named destinations out of 1000 (max. 500000)
- 72 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 185 PDF objects out of 1000 (max. 8388607)
+ 142 compressed objects within 2 object streams
+ 22 named destinations out of 1000 (max. 500000)
+ 92 words of extra memory for PDF output out of 10000 (max. 10000000)
 
