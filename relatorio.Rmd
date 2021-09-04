@@ -377,4 +377,4 @@ Temos conteúdo extra ao trabalho principal que serão indexados nessa seção, 
 Neste apêndice serão feitas análises extras que são interessante para a compreensão da variável desfecho, mas não necessariamente fundamentais, que pode ser acessado clicando [\textcolor{red}{aqui}](https://github.com/AlissonRP/gdp-statesBR/blob/main/extra.pdf).
 
 \subsection{Apêndice B: Código Completo}
-O código completo pode ser acessado  [\textcolor{red}{aqui}](https://github.com/AlissonRP/gdp-statesBR/blob/main/relatório.Rmd).
+O código completo pode ser acessado  [\textcolor{red}{aqui}](https://github.com/AlissonRP/gdp-statesBR/blob/main/relatorio.Rmd).
