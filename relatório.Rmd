@@ -362,7 +362,7 @@ tidy(fit2) %>%
   kable_classic(latex_options = "HOLD_position") 
   
 ```
-Que informa que o intercepto não significativo a 5%. Tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente `r round(glance(ft2)[1],3)*100`% da variação do PIB per capita dos estados é explicada pelas covariáveis propostas.
+Que informa que o intercepto não é significativo a 5%. Tem-se um p-valor << 0.001 do teste F e $R^2$ dado por `r round(glance(ft2)[1],3)` que informa que aproximadamente `r round(glance(ft2)[1],3)*100`% da variação do PIB per capita dos estados é explicada pelas covariáveis propostas.
 
 Assim um estado com IDHe máximo (1) adicionaria 70.391,625 reais ao PIB per capita, sendo o maior IDHe existente 0,828 e o maior PIB per capita 47008,77, da mesma maneira que um estado com a Incidência de Pobreza máxima (1), sendo o maior existente 0,263, reduziria 80336,96 reais na variável. A influência da área é de apenas 0,004, ou seja, a cada 1 $km^2$ adiciona 0,004 reais ao PIB per capita, assim como a influência da densidade demográfica é que a cada 1 $hab/km^2$ adiciona 22,830 reais.
 
