@@ -1,0 +1,295 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{lmodern}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Uma continuação da breve análise sobre o PIB per capita dos Estados Brasileiros no ano de 2019},
+  pdfauthor={Alisson Rosa e Vítor Pereira},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=2cm]{geometry}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage[brazil]{babel}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\ifluatex
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+
+\title{Uma continuação da breve análise sobre o PIB per capita dos Estados Brasileiros no ano de 2019}
+\author{Alisson Rosa e Vítor Pereira}
+\date{}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\section{Análise de Influência - DFBETAS}
+
+No diagnóstico dfbetas, que informam o grau de influência que a observação \(i\) tem sobre o coeficiente \(\hat{x_i}\), ou seja, sobre os parâmetros \(\hat{\beta_i}\). Então essa é uma medida completar ao DFFITS, que verifica a influência de \(i\) tem sobre o valor seu próprio valor ajustado \(\hat{y_i}\).
+
+\subsection{DFBETAS - Modelo Original}
+
+Nesta seção teremos as análises dos DFBETAS para o modelo inicial com o DF.
+
+Nos gráficos abaixo podemos ver que o DF está fora de todos os limites do DFBETAS, principalmente no DFBETA do x4 em que realmente o DF achata muito o gráfico. Os estados de AM, RJ e MS são candidatos a ponto de influente nas covariávies de Área, Densidade Demográfica e Pobreza.
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-1-1} \end{center}
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-1-2} \end{center}
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-1-3} \end{center}
+
+\subsection{DFBETAS - Modelo Ajustado}
+
+Nesta seção teremos as análises dos DFBETAS para o modelo inicial sem o DF.
+
+Nos gráficos abaixo podemos ver que não tem um estado que está fora de todos os limites do DFBETAS. MS está fora do DFBETA 1 e 5, SP está fora do DFBETA 1 e 2, o AM está fora do DFBETA 3 e RJ fora do DFBETA 4. Também podemos notar que nenhum dos possíveis pontos influentes achata o gráfico de uma forma extrema como acontecia com o DF no modelo original.
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-2-1} \end{center}
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-2-2} \end{center}
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-2-3} \end{center}
+
+\section{Análise Descritiva}
+
+Nesta seção veremos um breve resumo das variáveis de estudo, com medidas descritivas, medidas de correlação do banco original com o DF e a comparação dessas medidas com o banco e o modelo ajustado.
+
+Começaremos por uma tabela resumo, com informações sobre as covariáveis, em comparação com a banco ajustado podemos notar uma diferença significativa matematicamente da média do PIB per capita 27172,676 no banco com DF e 25121,530 no banco ajustado, o desvio padrão no banco original é 46\% maior, assim como podemos notar um aumento da média na Densidade Demográfica de 30\% e 48\% no desvio padrão, com apenas uma observação a mais.
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-3}Resumo das variáveis: }
+\centering
+\begin{tabular}[t]{l|c|c|c|c|c|c}
+\hline
+  & n & Média & Desvio Padrão & Mediana & Minímo & Máximo\\
+\hline
+PIB & 27 & 27172,676 & 14336,816 & 22936,280 & 12788,750 & 80502,470\\
+\hline
+IDHe & 27 & 0,718 & 0,050 & 0,717 & 0,636 & 0,828\\
+\hline
+Área & 27 & 315215,579 & 375101,871 & 224273,831 & 5760,783 & 1559168,117\\
+\hline
+Densidade Demográfica & 27 & 75,917 & 120,552 & 36,090 & 2,660 & 523,410\\
+\hline
+Pobreza & 27 & 0,116 & 0,075 & 0,128 & 0,017 & 0,263\\
+\hline
+\end{tabular}
+\end{table}
+
+A título de curiosidade vejamos o PIB por região:
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-4}PIB per capita por Região}
+\centering
+\begin{tabular}[t]{c|c|c|c}
+\hline
+Região & Média PIB & Desvio padrão & Estados\\
+\hline
+Centro-oeste & 45561 & 23649 & 4\\
+\hline
+Norte & 21049 & 2643 & 7\\
+\hline
+Nordeste & 16358 & 2070 & 9\\
+\hline
+Sul & 38062 & 1328 & 3\\
+\hline
+Sudeste & 35667 & 9566 & 4\\
+\hline
+\end{tabular}
+\end{table}
+
+Notamos que apenas o acréscimo do DF no banco de dados, faz com que a posição do Centro-Oeste de PIB per capita, saia do 3° lugar em média para o 1°, sendo a única região com maior de 40 mil. Assim como é a região disparadamente com maior desvio padrão, sendo 147\% maior que o desvio padrão da região sudeste, a região com segundo maior desvio padrão.
+
+\begin{center}\includegraphics{extra_files/figure-latex/unnamed-chunk-5-1} \end{center}
+
+\subsection{Correlação}
+
+Nesta seção, será comparada a correlação dos banco de dados com o DF e sem o DF.
+
+Temos que a matriz de correlação do banco original é:
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-6}Correlação entre as variáveis}
+\centering
+\begin{tabular}[t]{l|c|c|c|c|c}
+\hline
+  & PIB & IDHe & Área & Densidade Demográfica & Pobreza\\
+\hline
+PIB & 1,000 & 0,773 & -0,112 & 0,727 & -0,759\\
+\hline
+IDHe & 0,773 & 1,000 & -0,003 & 0,405 & -0,716\\
+\hline
+Área & -0,112 & -0,003 & 1,000 & -0,371 & 0,193\\
+\hline
+Densidade Demográfica & 0,727 & 0,405 & -0,371 & 1,000 & -0,380\\
+\hline
+Pobreza & -0,759 & -0,716 & 0,193 & -0,380 & 1,000\\
+\hline
+\end{tabular}
+\end{table}
+
+Temos que a matriz de correlação do banco ajustado é:
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-7}Correlação entre as variáveis}
+\centering
+\begin{tabular}[t]{l|c|c|c|c|c}
+\hline
+  & PIB & IDHe & Área & Densidade Demográfica & Pobreza\\
+\hline
+PIB & 1,000 & 0,822 & 0,016 & 0,391 & -0,880\\
+\hline
+IDHe & 0,822 & 1,000 & 0,058 & 0,237 & -0,692\\
+\hline
+Área & 0,016 & 0,058 & 1,000 & -0,376 & 0,158\\
+\hline
+Densidade Demográfica & 0,391 & 0,237 & -0,376 & 1,000 & -0,292\\
+\hline
+Pobreza & -0,880 & -0,692 & 0,158 & -0,292 & 1,000\\
+\hline
+\end{tabular}
+\end{table}
+
+Podemos notar que a correlação entre IDHe e PIB per capita cresce no modelo ajustado, também invertendo totalmente a relação linear entre a área e a variável desfecho, deixando de ser uma correlação positiva para uma correlação negativa. Como o DF tem a maior densidade demográfica e o maior PIB per capita, a correlação entre as duas variáveis aumenta quase 100\%, assim também diminuindo a correlação da taxa de pobreza extrema e a variável resposta, ficando mais evidente a influência do Distrito Federal na análise.
+
+\section{Modelos de Regressão Linear}
+
+Tem-se portanto como resumo do modelo final com o DF como observação é a seguinte tabela:
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-8}Resumo do modelo original}
+\centering
+\begin{tabular}[t]{c|c|c|c}
+\hline
+Coeficientes & Estimativa & Erro Padrão & p-valor\\
+\hline
+(Intercept) & -29249,678 & 24898,553 & 0,253\\
+\hline
+IDHe & 81293,014 & 32880,246 & 0,022\\
+\hline
+Área & 0,006 & 0,003 & 0,075\\
+\hline
+`Densidade Demográfica` & 62,199 & 10,675 & 0,000\\
+\hline
+Pobreza & -73736,452 & 21224,661 & 0,002\\
+\hline
+\end{tabular}
+\end{table}
+
+Que informa que o intercepto não significativos a 5\% e \(R^2\) dado por 0.876 que informa que aproximadamente 87.6\% da variação do PIB per capita dos estados é explicada pelas covariáveis propostas.
+
+E o modelo final sem o DF é dado pela tabela abaixo:
+
+\begin{table}[H]
+
+\caption{\label{tab:unnamed-chunk-9}Resumo do modelo final}
+\centering
+\begin{tabular}[t]{c|c|c|c}
+\hline
+Coeficientes & Estimativa & Erro Padrão & p-valor\\
+\hline
+(Intercept) & -18296,206 & 15527,248 & 0,252\\
+\hline
+IDHe & 70391,625 & 20444,077 & 0,002\\
+\hline
+Área & 0,004 & 0,002 & 0,046\\
+\hline
+`Densidade Demográfica` & 22,830 & 9,292 & 0,023\\
+\hline
+Pobreza & -80336,960 & 13190,734 & 0,000\\
+\hline
+\end{tabular}
+\end{table}
+
+Portanto, podemos notar, novamente, a influência do DF, em que temos uma variação de 60\% no intercepto, uma diminuição do beta 2 em 15\%, uma pequena alteração no beta 3, uma diminuição de mais de 180\% no beta 4 e um aumento da influência negativa de quase 10\% no beta 5. Sendo assim, o modelo ajustado com DF é consideralvelmente diferente do modelo sem DF.
+Desse modo notamos um aumento, também, na explicação geral das covariáveis no PIB per capita pelo modelo final do projeto, pois o \(R^2\) no modelo com DF é por 0.876, e no modelo sem o DF é 0.899, mesmo com uma observação a menos o modelo proposto pelo trabalho é superior em explicação da variável desfecho.
+
+\section{Conclusão}
+
+Podemos notar que o modelo proposto cumpre todos os testes de pressupostos, ao contrário do modelo original, tendo covariáveis que fazem sentido com realidade para explicar o PIB per capita, sendo esses de áreas realmente interessantes para o estudo desse componente social, como: População, Geografia, Condição de Vida e Educação.
+
+Dessa maneira percebemos a necessidade da remoção da observação do DF pelas análises de influência, análise descritiva e análise dos modelos ajustados, verificando uma clara interferência dessa observação no modelo final, que está bem justificada na parte principal do trabalho. Podemos confirmar que essa é uma análise de regressão acurada, pois possui covariáveis que explicam a variável dependente de forma significativa e correlata com os conhecimentos de outras áreas, uma explicação da variável resposta com quase 90\% pelas covariáveis, explicação altíssima.
+
+\end{document}

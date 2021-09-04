@@ -1,6 +1,6 @@
 ---
-title: "Atividade Avaliativa 3 - Análise Extra"
-author: "Alisson Rosa e Vítor Perira"
+title: "Uma continuação da breve análise sobre o PIB per capita dos Estados Brasileiros no ano de 2019"
+author: "Alisson Rosa e Vítor Pereira"
 header-includes:
    - \usepackage[brazil]{babel}
 geometry: margin=2cm
@@ -41,7 +41,7 @@ df = df[-7,]
 d=function(df,v1,v2,px){
   df %>% 
     ggplot(aes({{v1}},{{v2}})) +
-    geom_point(size=2.1,color="red")+
+    geom_point(size=1,color="red")+
     annotate(x=px, y=55000, 
          label=paste("Correlação= ", round(cor(df %>% 
                                          select({{v1}}),df %>% 
@@ -121,27 +121,179 @@ n1 = dim(df1)[1]
 ```
 
 \section{Análise de Influência - DFBETAS}
-No diagnóstico dfbetas, que informam o grau de influência que a observação $i$ tem sobre o coeficiente $\hat{x_i}$, ou seja, sobre os parâmetros $\hat{\beta_i}$. Então é uma medida completar ao DFFITS, que verifica a influência de $i$ tem sobre o valor seu próprio valor ajustado $\hat{y_i}$.
+No diagnóstico dfbetas, que informam o grau de influência que a observação $i$ tem sobre o coeficiente $\hat{x_i}$, ou seja, sobre os parâmetros $\hat{\beta_i}$. Então essa é uma medida completar ao DFFITS, que verifica a influência de $i$ tem sobre o valor seu próprio valor ajustado $\hat{y_i}$.
 
 \subsection{DFBETAS - Modelo Original}
 Nesta seção teremos as análises dos DFBETAS para o modelo inicial com o DF.
-```{r}
-dfb1<-dfbetas(ft1)[,1]
-dfb2<-dfbetas(ft1)[,2]
-dfb3<-dfbetas(ft1)[,3]
-dfb4<-dfbetas(ft1)[,4]
-dfb5<-dfbetas(ft1)[,5]
-dfb1 <- dfb1 %>% 
- graph(2/sqrt(n))+
-  labs(title="Dfbetas")+
-  labs(title="Dfbeta 1 vs índice",y="Dfbetas") 
-dfb2 <- dfb2 %>% 
- graph(2/sqrt(n))+
-  labs(title="Dfbetas")+
-  labs(title="Dfbeta 1 vs índice",y="Dfbetas")
-ggarrange(dfb1, dfb2, 
-          labels = c("A", "B"),
-          ncol = 2, nrow = 1)
 
+Nos gráficos abaixo podemos ver que o DF está fora de todos os limites do DFBETAS, principalmente no DFBETA do x4 em que realmente o DF achata muito o gráfico. Os estados de AM, RJ e MS são candidatos a ponto de influente nas covariávies de Área, Densidade Demográfica e Pobreza. 
+```{r}
+dfb1 <- dfbetas(ft1)[,1] %>%
+ graph(2/sqrt(n1))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 1 vs índice",y="Dfbetas") +
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+
+dfb2 <-dfbetas(ft1)[,2] %>%
+ graph(2/sqrt(n1))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 2 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+
+dfb3 <-dfbetas(ft1)[,3] %>%
+ graph(2/sqrt(n1))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 3 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+
+dfb4 <-dfbetas(ft1)[,4] %>%
+ graph(2/sqrt(n1))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 4 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+
+dfb5 <-dfbetas(ft1)[,5] %>%
+ graph(2/sqrt(n1))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 5 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df1$UF),size=2.8,point.padding = 0.3)
+
+ggarrange(dfb1, dfb2, 
+          labels = c("x1", "x2"),
+          ncol = 2, nrow = 1)
+ggarrange(dfb3, dfb4, 
+          labels = c("x3", "x4"),
+          ncol = 2, nrow = 1)
+ggarrange(dfb5, 
+          labels = c("x5"),
+          ncol = 1, nrow = 1)
 ```
 
+\subsection{DFBETAS - Modelo Ajustado}
+Nesta seção teremos as análises dos DFBETAS para o modelo inicial sem o DF.
+
+Nos gráficos abaixo podemos ver que não tem um estado que está fora de todos os limites do DFBETAS. MS está fora do DFBETA 1 e 5, SP está fora do DFBETA 1 e 2, o AM está fora do DFBETA 3 e RJ fora do DFBETA 4. Também podemos notar que nenhum dos possíveis pontos influentes achata o gráfico de uma forma extrema como acontecia com o DF no modelo original.
+```{r}
+dfb1 <- dfbetas(ft2)[,1] %>%
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 1 vs índice",y="Dfbetas") +
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
+
+dfb2 <-dfbetas(ft2)[,2] %>%
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 2 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
+
+dfb3 <-dfbetas(ft2)[,3] %>%
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 3 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
+
+dfb4 <-dfbetas(ft2)[,4] %>%
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 4 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
+
+dfb5 <-dfbetas(ft2)[,5] %>%
+ graph(2/sqrt(n))+
+  labs(title="Dfbetas")+
+  labs(title="Dfbeta 5 vs índice",y="Dfbetas")+
+    ggrepel::geom_text_repel(aes(label=df$UF),size=2.8,point.padding = 0.3)
+
+ggarrange(dfb1, dfb2, 
+          labels = c("x1", "x2"),
+          ncol = 2, nrow = 1)
+ggarrange(dfb3, dfb4, 
+          labels = c("x3", "x4"),
+          ncol = 2, nrow = 1)
+ggarrange(dfb5, 
+          labels = c("x5"),
+          ncol = 1, nrow = 1)
+```
+
+\section{Análise Descritiva}
+Nesta seção veremos um breve resumo das variáveis de estudo, com medidas descritivas, medidas de correlação do banco original com o DF e a comparação dessas medidas com o banco e o modelo ajustado.
+
+Começaremos por uma tabela resumo, com informações sobre as covariáveis, em comparação com a banco ajustado podemos notar uma diferença significativa matematicamente da média do PIB per capita 27172,676 no banco com DF e 25121,530 no banco ajustado, o desvio padrão no banco original é 46% maior, assim como podemos notar um aumento da média na Densidade Demográfica de 30% e 48% no desvio padrão, com apenas uma observação a mais.
+```{r}
+df1 %>% 
+  select(-UF,-Região) %>% 
+  psych::describe() %>% 
+  .[,-c(1,6,7,10,11,13,12)] %>% 
+  rename(Média=mean,`Desvio Padrão`=sd,Mediana=median,Minímo=min,Máximo=max) %>% 
+  round(3) %>%
+  tbl("Resumo das variáveis: ")
+```
+
+A título de curiosidade vejamos o PIB por região:
+```{r }
+df1 %>% 
+  group_by(Região) %>% 
+  summarise(`Média PIB`=mean(PIB),`Desvio padrão`=sqrt(var(PIB)), Estados=n()) %>% 
+  tbl("PIB per capita por Região")
+```
+Notamos que apenas o acréscimo do DF no banco de dados, faz com que a posição do Centro-Oeste de PIB per capita, saia do 3° lugar em média para o 1°, sendo a única região com maior de 40 mil. Assim como é a região disparadamente com maior desvio padrão, sendo 147% maior que o desvio padrão da região sudeste, a região com segundo maior desvio padrão.
+```{r}
+df %>% 
+  group_by(Região) %>% 
+  summarise(mean=mean(PIB),std=sqrt(var(PIB)),count=n()) %>% 
+  ggplot(aes(mean,fct_reorder(Região,mean),fill=Região)) +
+  geom_bar(stat="identity")+
+  geom_text(aes(label=round(mean,3)), hjust=-0.002)+
+  labs(title="PIB por Região",y="Estado",x="PIB Médio") + scale_x_continuous(
+    expand = c(0.01, 0),limits = c(0, 43000))
+```
+
+\subsection{Correlação}
+Nesta seção, será comparada a correlação dos banco de dados com o DF e sem o DF.
+
+Temos que a matriz de correlação do banco original é:
+
+```{r}
+df1 %>% 
+  select(-UF,-Região) %>% 
+   cor() %>% 
+  round(3) %>%
+ tbl("Correlação entre as variáveis")
+```
+
+Temos que a matriz de correlação do banco ajustado é:
+
+```{r}
+df %>% 
+  select(-UF,-Região) %>% 
+   cor() %>% 
+  round(3) %>%
+ tbl("Correlação entre as variáveis")
+```
+
+Podemos notar que a correlação entre IDHe e PIB per capita cresce no modelo ajustado, também invertendo totalmente a relação linear entre a área e a variável desfecho, deixando de ser uma correlação positiva para uma correlação negativa. Como o DF tem a maior densidade demográfica e o maior PIB per capita, a correlação entre as duas variáveis aumenta quase 100%, assim também diminuindo a correlação da taxa de pobreza extrema e a variável resposta, ficando mais evidente a influência do Distrito Federal na análise.
+
+\section{Modelos de Regressão Linear}
+Tem-se portanto como resumo do modelo final com o DF como observação é a seguinte tabela:
+```{r}
+tidy(fit1) %>% 
+  select(-statistic) %>% 
+  kable(caption="Resumo do modelo original",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 3) %>% 
+  kable_classic(latex_options = "HOLD_position") 
+```
+Que informa que o intercepto não significativos a 5% e $R^2$ dado por `r round(glance(ft1)[1],3)` que informa que aproximadamente `r round(glance(ft1)[1],3)*100`% da variação do PIB per capita dos estados é explicada pelas covariáveis propostas.
+
+E o modelo final sem o DF é dado pela tabela abaixo:
+```{r}
+tidy(fit2) %>% 
+  select(-statistic) %>% 
+  kable(caption="Resumo do modelo final",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 3) %>% 
+  kable_classic(latex_options = "HOLD_position") 
+```
+Portanto, podemos notar, novamente, a influência do DF, em que temos uma variação de 60% no intercepto, uma diminuição do beta 2 em 15%, uma pequena alteração no beta 3, uma diminuição de mais de 180% no beta 4 e um aumento da influência negativa de quase 10% no beta 5. Sendo assim, o modelo ajustado com DF é consideralvelmente diferente do modelo sem DF.
+Desse modo notamos um aumento, também, na explicação geral das covariáveis no PIB per capita pelo modelo final do projeto, pois o $R^2$ no modelo com DF é por `r round(glance(ft1)[1],3)`, e no modelo sem o DF é `r round(glance(ft2)[1],3)`, mesmo com uma observação a menos o modelo proposto pelo trabalho é superior em explicação da variável desfecho.
+
+\section{Conclusão}
+Podemos notar que o modelo proposto cumpre todos os testes de pressupostos, ao contrário do modelo original, tendo covariáveis que fazem sentido com realidade para explicar o PIB per capita, sendo esses de áreas realmente interessantes para o estudo desse componente social, como: População, Geografia, Condição de Vida e Educação.
+
+Dessa maneira percebemos a necessidade da remoção da observação do DF pelas análises de influência, análise descritiva e análise dos modelos ajustados, verificando uma clara interferência dessa observação no modelo final, que está bem justificada na parte principal do trabalho. Podemos confirmar que essa é uma análise de regressão acurada, pois possui covariáveis que explicam a variável dependente de forma significativa e correlata com os conhecimentos de outras áreas, uma explicação da variável resposta com quase 90% pelas covariáveis, explicação altíssima.

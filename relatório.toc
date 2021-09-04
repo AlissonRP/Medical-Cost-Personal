@@ -1,0 +1,9 @@
+\babel@toc {brazil}{}\relax 
+\contentsline {section}{\numberline {1}Introdução}{1}{section.1}%
+\contentsline {section}{\numberline {2}Análise Descritiva}{1}{section.2}%
+\contentsline {section}{\numberline {3}Análise de Influência}{4}{section.3}%
+\contentsline {section}{\numberline {4}Verificação dos pressupostos}{10}{section.4}%
+\contentsline {section}{\numberline {5}Ajuste Final}{11}{section.5}%
+\contentsline {section}{\numberline {6}Apêndice}{11}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Apêndice A: Análise de Influência e Descritiva Extra}{11}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Apêndice B: Código Completo}{11}{subsection.6.2}%

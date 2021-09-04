@@ -11,7 +11,6 @@ editor_options:
 ---
 
 ```{r setup,include=F}
- 
 library('tidyverse')
 library("tidymodels")
 library('kableExtra')
@@ -26,8 +25,8 @@ df=df %>%
                              "Nordeste"="Northeast",
                              "Centro-oeste"="Center-west",
                               "Sudeste"="Southeast",
-                              "Sul"="South")) %>% 
-                              .[-7,]  
+                              "Sul"="South")) 
+   
   
 ```
 
@@ -63,18 +62,29 @@ graph=function(df,l){
 ```
 
 \section{Ajuste dos Modelos}
-Nessa seção serão ajustados os modelos de regressão linear, rf e knn [^1], usando as covariáveis já citadas.  
+Nessa seção serão ajustados os modelos de regressão linear, floresta aleatória(rf) e e k-vizinhos mais próximos (knn) [^1], usando as covariáveis já citadas.  
 Os hiperparâmetros dos modelos que possuem, foram encontrados por otimização, tentando minimizar a raiz do erro quadrático médio (rmse). O seguinte gráfico ilustra o rmse para cada modelo 
 
 ```{r mod1}
 set.seed(4)
+df_split=initial_split(df)
+df_train=training(df_split)
+df_test=testing(df_split)
+
 df_boot=
-  df %>% 
+  df_train %>% 
   select(-UF,-Região) %>% 
-  bootstraps(15)
+  bootstraps(20)
+
 df_rec1=df %>%
   select(-UF,-Região) %>% 
   recipe(PIB~.)
+
+df_rec2=df %>%
+  select(-UF,-Região) %>% 
+  .[-7,] %>% 
+  recipe(PIB~.)
+
 ```
 
 
@@ -82,16 +92,19 @@ df_rec1=df %>%
 df_reg=
   linear_reg() %>% 
   set_engine("lm")
+
 df_rf=
-  rand_forest(trees=500,mtry=3,min_n =7) %>% 
+  rand_forest(trees=500,mtry=tune(),min_n=tune()) %>% 
   set_mode("regression") %>% 
-  set_engine("randomForest",importance = "impurity")
-df_knn= nearest_neighbor(mode="regression",neighbors =8) %>% 
+  set_engine("ranger",importance = "impurity")
+
+df_knn=
+  nearest_neighbor(mode="regression",neighbors = tune()) %>% 
   set_engine("kknn")
 ```
 ```{r}
 df_work=
-   workflow_set(list(df_rec1),list(reg=df_reg,rf=df_rf,knn=df_knn),cross = T)
+   workflow_set(list(SDF=df_rec1,CDF=df_rec2),list(reg=df_reg,rf=df_rf,knn=df_knn),cross = T)
 ```
 
 ```{r}
@@ -105,7 +118,9 @@ df_tuner=df_work %>%
 autoplot(df_tuner)+
   labs(title="Comparação dos modelos ajustados",x="Rank do modelo",y="rmse")+
   theme(legend.title = element_blank())
+
 rank_results(df_tuner,rank_metric = "rmse") %>% view()
+
 fit1=df_tuner %>% 
   extract_workflow(id="recipe_rf") %>% 
   fit(df)                 
@@ -113,11 +128,16 @@ fit1=df_tuner %>%
 fit2=df_tuner %>% 
   extract_workflow(id="recipe_reg") %>%
   fit(df)
+
+df_tuner %>% 
+   extract_workflow_set_result(id='SDF_knn') %>% 
+   select_best(metric='rmse')
+  
 ft1=fit1$fit$fit$fit
 ft2=fit2$fit$fit$fit
 residuo = rstudent(ft2)
 ```
-Perceba que a rf possui um rmse menor (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[1,4]`) e a regressão linear possui o maior erro padrão (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[2,5]`)
+Perceba que a regressão linear possui um rmse menor (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[1,4]`) e a regressão linear possui o maior erro padrão (`r rank_results(df_tuner,rank_metric = "rmse") %>% .[2,5]`)
 
 Em termos da rf as variáveis que possuem a maior importância são dadas pelo seguinte gráfico 
 
