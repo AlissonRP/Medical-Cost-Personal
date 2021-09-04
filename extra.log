@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.24)  4 SEP 2021 01:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.24)  4 SEP 2021 01:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**relatório.tex
-(./relatório.tex
+**extra.tex
+(./extra.tex
 LaTeX2e <2021-06-01> patch level 1
 L3 programming layer <2021-07-12> (c:/Users/user/AppData/Roaming/TinyTeX/texmf-
 dist/tex/latex/base/article.cls
@@ -568,8 +568,8 @@ Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
 File: l3backend-pdftex.def 2021-07-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count308
 \l__pdf_internal_box=\box72
-) (./relatório.aux)
-\openout1 = `relatório.aux'.
+) (./extra.aux)
+\openout1 = `extra.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 95.
 LaTeX Font Info:    ... okay on input line 95.
@@ -620,9 +620,9 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 95.
 LaTeX Info: Redefining \pageref on input line 95.
 LaTeX Info: Redefining \nameref on input line 95.
-(./relatório.out) (./relatório.out)
+(./extra.out) (./extra.out)
 \@outlinefile=\write3
-\openout3 = `relatório.out'.
+\openout3 = `extra.out'.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -693,199 +693,141 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 97.
 
 (c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) (./relatório.toc
+) (./extra.toc
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 8.
+(Font)              <10> on input line 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 8.
+(Font)              <7> on input line 3.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 8.
+(Font)              <5> on input line 3.
 )
 \tf@toc=\write4
-\openout4 = `relatório.toc'.
+\openout4 = `extra.toc'.
 
+<extra_files/figure-latex/unnamed-chunk-1-1.pdf, id=39, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-1-1.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-1-1.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-1-1.pdf  used o
+n input line 112.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
 [1
 
 {c:/Users/user/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex
 .map}]
-<relatório_files/figure-latex/graphstates-1.pdf, id=56, 563.10374pt x 289.08pt
+<extra_files/figure-latex/unnamed-chunk-1-2.pdf, id=54, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-1-2.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-1-2.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-1-2.pdf  used o
+n input line 114.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+<extra_files/figure-latex/unnamed-chunk-1-3.pdf, id=55, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-1-3.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-1-3.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-1-3.pdf  used o
+n input line 116.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+[2 <./extra_files/figure-latex/unnamed-chunk-1-1.pdf> <./extra_files/figure-lat
+ex/unnamed-chunk-1-2.pdf>]
+<extra_files/figure-latex/unnamed-chunk-2-1.pdf, id=72, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-2-1.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-2-1.pdf  used o
+n input line 124.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+<extra_files/figure-latex/unnamed-chunk-2-2.pdf, id=73, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-2-2.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-2-2.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-2-2.pdf  used o
+n input line 126.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+[3 <./extra_files/figure-latex/unnamed-chunk-1-3.pdf> <./extra_files/figure-lat
+ex/unnamed-chunk-2-1.pdf>]
+<extra_files/figure-latex/unnamed-chunk-2-3.pdf, id=90, 563.10374pt x 289.08pt>
+
+File: extra_files/figure-latex/unnamed-chunk-2-3.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-2-3.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-2-3.pdf  used o
+n input line 128.
+(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
+[4 <./extra_files/figure-latex/unnamed-chunk-2-2.pdf> <./extra_files/figure-lat
+ex/unnamed-chunk-2-3.pdf>]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
+80.
+(c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+<extra_files/figure-latex/unnamed-chunk-5-1.pdf, id=107, 563.10374pt x 289.08pt
 >
-File: relatório_files/figure-latex/graphstates-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/graphstates-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/graphstates-1.pdf  used 
-on input line 149.
+File: extra_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
+<use extra_files/figure-latex/unnamed-chunk-5-1.pdf>
+Package pdftex.def Info: extra_files/figure-latex/unnamed-chunk-5-1.pdf  used o
+n input line 182.
 (pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-
-LaTeX Warning: Reference `fig:graphstates' on page 2 undefined on input line 17
-4.
-
-<relatório_files/figure-latex/unnamed-chunk-3-1.pdf, id=57, 563.10374pt x 289.
-08pt>
-File: relatório_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pd
-f)
-<use relatório_files/figure-latex/unnamed-chunk-3-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/unnamed-chunk-3-1.pdf  u
-sed on input line 178.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[2pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
+[5pdfTeX warning (ext4): destination with the same identifier (name{table.1}) h
 as been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.178 ...ure-latex/unnamed-chunk-3-1} \end{center}
-                                                  pdfTeX warning (ext4): destin
-ation with the same identifier (name{table.2}) has been already used, duplicate
- ignored
+l.210 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.2
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.178 ...ure-latex/unnamed-chunk-3-1} \end{center}
-                                                   <./relatório_files/figure-l
-atex/graphstates-1.pdf>]
-<relatório_files/figure-latex/unnamed-chunk-4-1.pdf, id=69, 563.10374pt x 289.
-08pt>
-File: relatório_files/figure-latex/unnamed-chunk-4-1.pdf Graphic file (type pd
-f)
-<use relatório_files/figure-latex/unnamed-chunk-4-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/unnamed-chunk-4-1.pdf  u
-sed on input line 184.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-<relatório_files/figure-latex/unnamed-chunk-5-1.pdf, id=70, 563.10374pt x 289.
-08pt>
-File: relatório_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pd
-f)
-<use relatório_files/figure-latex/unnamed-chunk-5-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/unnamed-chunk-5-1.pdf  u
-sed on input line 190.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[3 <./relatório_files/figure-latex/unnamed-chunk-3-1.pdf> <./relatório_files/
-figure-latex/unnamed-chunk-4-1.pdf>]
-<relatório_files/figure-latex/alavancagem-1.pdf, id=85, 563.10374pt x 289.08pt
->
-File: relatório_files/figure-latex/alavancagem-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/alavancagem-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/alavancagem-1.pdf  used 
-on input line 225.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[4pdfTeX warning (ext4): destination with the same identifier (name{table.3}) h
-as been already used, duplicate ignored
+l.210 
+       <./extra_files/figure-latex/unnamed-chunk-5-1.pdf>] [6pdfTeX warning (ex
+t4): destination with the same identifier (name{table.3}) has been already used
+, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.225 .../figure-latex/alavancagem-1} \end{center}
-                                                   <./relatório_files/figure-l
-atex/unnamed-chunk-5-1.pdf>]
-<relatório_files/figure-latex/alavancagem2-1.pdf, id=96, 563.10374pt x 289.08p
-t>
-File: relatório_files/figure-latex/alavancagem2-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/alavancagem2-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/alavancagem2-1.pdf  used
- on input line 229.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-<relatório_files/figure-latex/dffits-1.pdf, id=97, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/dffits-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/dffits-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/dffits-1.pdf  used on in
-put line 233.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[5 <./relatório_files/figure-latex/alavancagem-1.pdf> <./relatório_files/figu
-re-latex/alavancagem2-1.pdf>]
-<relatório_files/figure-latex/dffits2-1.pdf, id=115, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/dffits2-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/dffits2-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/dffits2-1.pdf  used on i
-nput line 237.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-<relatório_files/figure-latex/cook-1.pdf, id=116, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/cook-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/cook-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/cook-1.pdf  used on inpu
-t line 241.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[6 <./relatório_files/figure-latex/dffits-1.pdf> <./relatório_files/figure-la
-tex/dffits2-1.pdf>]
-<relatório_files/figure-latex/cook1-1.pdf, id=131, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/cook1-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/cook1-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/cook1-1.pdf  used on inp
-ut line 245.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-<relatório_files/figure-latex/residuos-1.pdf, id=132, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/residuos-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/residuos-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/residuos-1.pdf  used on 
-input line 249.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[7 <./relatório_files/figure-latex/cook-1.pdf> <./relatório_files/figure-late
-x/cook1-1.pdf>]
-<relatório_files/figure-latex/residuos1-1.pdf, id=148, 563.10374pt x 289.08pt>
-
-File: relatório_files/figure-latex/residuos1-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/residuos1-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/residuos1-1.pdf  used on
- input line 253.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-<relatório_files/figure-latex/env-1.pdf, id=149, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/env-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/env-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/env-1.pdf  used on input
- line 257.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[8 <./relatório_files/figure-latex/residuos-1.pdf> <./relatório_files/figure-
-latex/residuos1-1.pdf>]
-<relatório_files/figure-latex/env2-1.pdf, id=165, 563.10374pt x 289.08pt>
-File: relatório_files/figure-latex/env2-1.pdf Graphic file (type pdf)
-<use relatório_files/figure-latex/env2-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/env2-1.pdf  used on inpu
-t line 261.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[9 <./relatório_files/figure-latex/env-1.pdf> <./relatório_files/figure-latex
-/env2-1.pdf>]
-<relatório_files/figure-latex/unnamed-chunk-7-1.pdf, id=186, 563.10374pt x 289
-.08pt>
-File: relatório_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pd
-f)
-<use relatório_files/figure-latex/unnamed-chunk-7-1.pdf>
-Package pdftex.def Info: relatório_files/figure-latex/unnamed-chunk-7-1.pdf  u
-sed on input line 292.
-(pdftex.def)             Requested size: 500.49057pt x 256.93633pt.
-[10 <./relatório_files/figure-latex/unnamed-chunk-7-1.pdf>] [11pdfTeX warning 
-(ext4): destination with the same identifier (name{table.4}) has been already u
-sed, duplicate ignored
+l.288 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.4
+}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.341 \end{document}
-                    ] (./relatório.aux)
-
-LaTeX Warning: There were undefined references.
-
-Package rerunfilecheck Info: File `relatório.out' has not changed.
-(rerunfilecheck)             Checksum: AADE0C51740ABEC2E782C17179281E6C;1339.
+l.288 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.5
+}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.288 
+      pdfTeX warning (ext4): destination with the same identifier (name{table.6
+}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.288 
+      ] [7] (./extra.aux)
+Package rerunfilecheck Info: File `extra.out' has not changed.
+(rerunfilecheck)             Checksum: 83D06A3FA853CE7B899E7B90D838D91C;1131.
  ) 
 Here is how much of TeX's memory you used:
- 13069 strings out of 480502
- 198169 string characters out of 5898165
- 524976 words of memory out of 5000000
- 30458 multiletter control sequences out of 15000+600000
- 453084 words of font info for 67 fonts, out of 8000000 for 9000
+ 13025 strings out of 480502
+ 195510 string characters out of 5898165
+ 532160 words of memory out of 5000000
+ 30422 multiletter control sequences out of 15000+600000
+ 449186 words of font info for 67 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 60i,9n,66p,546b,415s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 60i,9n,66p,658b,415s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-rm.en
-c}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-maths
-y.enc}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-m
-athit.enc}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/
-lm-ec.enc}<c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/
-lm/lmbx10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pub
-lic/lm/lmbx12.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1
-/public/lm/lmmi10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
-ype1/public/lm/lmmi7.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/font
-s/type1/public/lm/lmr10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/f
-onts/type1/public/lm/lmr12.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dis
-t/fonts/type1/public/lm/lmr17.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-
-dist/fonts/type1/public/lm/lmr7.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texm
-f-dist/fonts/type1/public/lm/lmri10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/
-texmf-dist/fonts/type1/public/lm/lmsy10.pfb>
-Output written on relatório.pdf (11 pages, 302414 bytes).
+c}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-ts1.e
+nc}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-math
+it.enc}{c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/enc/dvips/lm/lm-
+ec.enc}<c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public/lm/
+lmbx10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/public
+/lm/lmbx12.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type1/pu
+blic/lm/lmmi10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/type
+1/public/lm/lmmi7.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/fonts/t
+ype1/public/lm/lmr10.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/font
+s/type1/public/lm/lmr12.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dist/f
+onts/type1/public/lm/lmr17.pfb><c:/Users/user/AppData/Roaming/TinyTeX/texmf-dis
+t/fonts/type1/public/lm/lmr7.pfb>
+Output written on extra.pdf (7 pages, 229387 bytes).
 PDF statistics:
- 262 PDF objects out of 1000 (max. 8388607)
- 196 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
- 140 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 185 PDF objects out of 1000 (max. 8388607)
+ 142 compressed objects within 2 object streams
+ 22 named destinations out of 1000 (max. 500000)
+ 92 words of extra memory for PDF output out of 10000 (max. 10000000)
 
