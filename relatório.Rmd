@@ -358,7 +358,7 @@ Tem-se  portanto como resumo do modelo final a seguinte tabela:
 tidy(fit2) %>% 
   select(-statistic) %>% 
   kable(caption="Resumo do modelo final",align = "c",col.names = c("Coeficientes","Estimativa","Erro Padrão","p-valor"),digits = 3) %>% 
-  footnote(general = "Na verdade, o valor com maior precisão do p-valor do teste de significância associado a  Pobreza é: 0,0000048 ",footnote_as_chunk = T, title_format = c("italic", "underline")) %>% 
+  footnote(general = "Na verdade, o p-valor com maior precisão  do teste de significância associado a  Pobreza é: 0,0000048 ",footnote_as_chunk = T, title_format = c("italic", "underline")) %>% 
   kable_classic(latex_options = "HOLD_position") 
   
 ```
@@ -374,7 +374,7 @@ Temos conteúdo extra ao trabalho principal que serão indexados nessa seção, 
 
 \subsection{Apêndice A: Análise de Influência e Descritiva Extra}
 
-Neste apêndice serão feitas análises extras que são interessante para a compreensão da variável desfecho, mas não necessariamente fundamentais, que pode ser acessado clicando [aqui]().
+Neste apêndice serão feitas análises extras que são interessante para a compreensão da variável desfecho, mas não necessariamente fundamentais, que pode ser acessado clicando [\textcolor{red}{aqui}](https://github.com/AlissonRP/gdp-statesBR/blob/main/extra.pdf).
 
 \subsection{Apêndice B: Código Completo}
-O código completo pode ser acessado  [aqui](https://github.com/AlissonRP/gdp-statesBR/blob/main/código.Rmd).
+O código completo pode ser acessado  [\textcolor{red}{aqui}](https://github.com/AlissonRP/gdp-statesBR/blob/main/relatório.Rmd).
